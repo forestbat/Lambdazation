@@ -2,9 +2,13 @@ package org.lambdazation.common.entity;
 
 import org.lambdazation.Lambdazation;
 
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IEntityMultiPart;
+import net.minecraft.entity.IRangedAttackMob;
 import net.minecraft.entity.MultiPartEntityPart;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.EntityAIAttackRanged;
+
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
@@ -12,7 +16,7 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
-public final class EntityCSharp extends EntityMob implements IEntityMultiPart, IBoss {
+public final class EntityCSharp extends EntityMob implements IEntityMultiPart, IBoss, IRangedAttackMob {
 	public static final DataParameter<Integer> PHASE = EntityDataManager.createKey(EntityCSharp.class,
 		DataSerializers.VARINT);
 
@@ -22,6 +26,10 @@ public final class EntityCSharp extends EntityMob implements IEntityMultiPart, I
 		super(lambdazation.lambdazationEntityTypes.entityTypeCSharp, world);
 
 		this.lambdazation = lambdazation;
+	}
+
+	public void initEntityAI() {
+		this.tasks.addTask(0, new EntityAIAttackRanged(this, 3, 100, 40));
 	}
 
 	@Override
@@ -39,5 +47,15 @@ public final class EntityCSharp extends EntityMob implements IEntityMultiPart, I
 	public void registerAttributes() {
 		super.registerAttributes();
 		getAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(2560);
+	}
+
+	@Override
+	public void attackEntityWithRangedAttack(EntityLivingBase target, float distanceFactor) {
+
+	}
+
+	@Override
+	public void setSwingingArms(boolean swingingArms) {
+
 	}
 }
