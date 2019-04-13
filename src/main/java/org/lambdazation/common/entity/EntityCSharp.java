@@ -1,5 +1,7 @@
 package org.lambdazation.common.entity;
 
+import net.minecraft.entity.ai.EntityAIBreakBlock;
+import net.minecraft.init.Blocks;
 import org.lambdazation.Lambdazation;
 
 import net.minecraft.entity.EntityLivingBase;
@@ -30,6 +32,7 @@ public final class EntityCSharp extends EntityMob implements IEntityMultiPart, I
 
 	public void initEntityAI() {
 		this.tasks.addTask(0, new EntityAIAttackRanged(this, 3, 100, 40));
+		this.tasks.addTask(5, new EntityAIBreakBlock(Blocks.TURTLE_EGG, this, 1.0D, 3));
 	}
 
 	@Override

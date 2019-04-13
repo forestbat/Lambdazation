@@ -3,13 +3,18 @@
 	"item.lambdazation.lambda_crystal": "Lambda Crystal",
 	"item.lambdazation.lens": "Lens",
 	"item.lambdazation.calibrator": "Calibrator",
+
 	"block.lambdazation.lambda_ore": "Lambda Ore",
 	"block.lambdazation.lambda_block": "Lambda Block",
 	"block.lambdazation.crystallizer": "Crystallizer",
 	"block.lambdazation.transformer": "Transformer",
 	"block.lambdazation.charger": "Charger",
 	"block.lambdazation.reducer": "Reducer",
+
 	"entity.lambdazation.java": "Java",
 	"entity.lambdazation.csharp": "CSharp",
-	"biome.lambdazation.music_valley": "Music Valley"
+	"biome.lambdazation.music_valley": "Music Valley",
+
+	"entity.java.laugh_word": "Foolish,Your Command is only a heap of ash",
+	"entity.java.death_word": "You think you kill me,No,this is only a shadow of me.If you want to find me,come to GITHUB.I'm everywhere."
 }
