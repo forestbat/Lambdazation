@@ -2,6 +2,7 @@ package org.lambdazation.common.core;
 
 import org.lambdazation.Lambdazation;
 import org.lambdazation.common.item.ItemCalibrator;
+import org.lambdazation.common.item.ItemJavaEye;
 import org.lambdazation.common.item.ItemLambdaCrystal;
 import org.lambdazation.common.item.ItemLens;
 
@@ -17,6 +18,7 @@ public final class LambdazationItems {
 	public final ItemLambdaCrystal itemLambdaCrystal;
 	public final ItemLens itemLens;
 	public final ItemCalibrator itemCalibrator;
+	public final ItemJavaEye itemJavaEye;
 
 	public final ItemBlock itemBlockLambdaOre;
 	public final ItemBlock itemBlockLambdaBlock;
@@ -41,6 +43,8 @@ public final class LambdazationItems {
 		itemCalibrator = new ItemCalibrator(lambdazation, new Item.Properties()
 			.group(lambdazation.lambdazationItemGroup));
 		itemCalibrator.setRegistryName(new ResourceLocation("lambdazation:calibrator"));
+		itemJavaEye=new ItemJavaEye(lambdazation,new Item.Properties().group(lambdazation.lambdazationItemGroup));
+		itemJavaEye.setRegistryName(new ResourceLocation("lambdazation:java_eye"));
 
 		itemBlockLambdaOre = new ItemBlock(lambdazation.lambdazationBlocks.blockLambdaOre, new Item.Properties()
 			.group(lambdazation.lambdazationItemGroup)

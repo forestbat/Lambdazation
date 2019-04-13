@@ -7,6 +7,11 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.GenerationStage;
+import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.MinableConfig;
+import net.minecraft.world.gen.feature.NoFeatureConfig;
+import net.minecraft.world.gen.placement.CountRangeConfig;
 import net.minecraft.world.gen.surfacebuilders.CompositeSurfaceBuilder;
 
 public final class BiomeMusicValley extends Biome {
@@ -26,6 +31,20 @@ public final class BiomeMusicValley extends Biome {
 			.parent(null));
 
 		this.lambdazation = lambdazation;
+		this.addFeature(
+			GenerationStage.Decoration.TOP_LAYER_MODIFICATION,
+			createCompositeFeature(
+				Feature.MINABLE,
+				new MinableConfig(MinableConfig.IS_ROCK, lambdazation.lambdazationBlocks.blockLambdaBlock.getDefaultState(), 23),
+				COUNT_RANGE,
+				new CountRangeConfig(10, 17, 50, 70)));
+		this.addFeature(
+			GenerationStage.Decoration.TOP_LAYER_MODIFICATION,
+			createCompositeFeature(
+				Feature.FOREST_FLOWERS,
+				new NoFeatureConfig(),
+				COUNT_RANGE,
+				new CountRangeConfig(10, 64, 68, 70)));
 	}
 
 	public void playSound(EntityPlayer player) {
