@@ -3,9 +3,9 @@ package org.lambdazation.common.item;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockGrass;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.material.MaterialColor;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.nbt.NBTTagCompound;
@@ -13,30 +13,17 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Optional;
-
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Contract;
 import org.lambdazation.Lambdazation;
 import org.lambdazation.common.block.BlockLambdaGrass;
-import org.lambdazation.common.core.LambdazationTermFactory.TermMetadata;
-import org.lambdazation.common.core.LambdazationTermFactory.TermNamer;
-import org.lambdazation.common.core.LambdazationTermFactory.TermNaming;
-import org.lambdazation.common.core.LambdazationTermFactory.TermRef;
-import org.lambdazation.common.core.LambdazationTermFactory.TermState;
-import org.lambdazation.common.core.LambdazationTermFactory.TermStatistics;
+import org.lambdazation.common.core.LambdazationTermFactory.*;
 import org.lambdazation.common.util.GeneralizedBuilder;
 import org.lambdazation.common.util.IO;
 import org.lamcalcj.ast.Lambda.Term;
+
+import java.io.*;
+import java.util.Arrays;
+import java.util.Optional;
 
 public final class ItemLambdaCrystal extends Item {
 	public final Lambdazation lambdazation;
