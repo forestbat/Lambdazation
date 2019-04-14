@@ -16,5 +16,11 @@
 	"biome.lambdazation.music_valley": "Music Valley",
 
 	"entity.java.laugh_word": "Foolish,Your Command is only a heap of ash",
-	"entity.java.death_word": "You think you kill me,No,this is only a shadow of me.If you want to find me,come to GITHUB.I'm everywhere."
+	"entity.java.death_word": "You think you kill me,No,this is only a shadow of me.If you want to find me,come to GITHUB.I'm everywhere.",
+	"entity.java.death_word2": "Too young too simple,take your mob grinder away!",
+
+	"entity.csharp.laugh_word": "Do you want to test if you can /kill me? You should find your mother.",
+	"entity.csharp.laugh_word2": "Hiding after a machine,where's your d**k?",
+	"entity.csharp.death_word": "My situation today is not very good……It's only a phantom of me.I'm outside of the world."
+
 }

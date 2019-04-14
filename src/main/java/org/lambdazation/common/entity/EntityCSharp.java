@@ -1,14 +1,20 @@
 package org.lambdazation.common.entity;
 
+import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.*;
 import net.minecraft.entity.ai.EntityAIBreakBlock;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraftforge.common.util.FakePlayer;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.lambdazation.Lambdazation;
 
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.IEntityMultiPart;
-import net.minecraft.entity.IRangedAttackMob;
-import net.minecraft.entity.MultiPartEntityPart;
-import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIAttackRanged;
 
 import net.minecraft.entity.monster.EntityMob;
@@ -17,10 +23,14 @@ import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
+import org.lambdazation.common.item.ItemJavaEye;
 
 public final class EntityCSharp extends EntityMob implements IEntityMultiPart, IBoss, IRangedAttackMob {
 	public static final DataParameter<Integer> PHASE = EntityDataManager.createKey(EntityCSharp.class,
 		DataSerializers.VARINT);
+	public static final String CSHARP_LAUGH1=I18n.format("entity.csharp.laugh_word");
+	public static final String CSHARP_LAUGH2=I18n.format("entity.csharp.laugh_word2");
+	public static final String CSHARP_DEATH=I18n.format("entity.csharp.death_word");
 
 	public final Lambdazation lambdazation;
 
@@ -50,6 +60,7 @@ public final class EntityCSharp extends EntityMob implements IEntityMultiPart, I
 	public void registerAttributes() {
 		super.registerAttributes();
 		getAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(2560);
+		getAttribute(SharedMonsterAttributes.FLYING_SPEED).setBaseValue(6);
 	}
 
 	@Override
@@ -58,7 +69,42 @@ public final class EntityCSharp extends EntityMob implements IEntityMultiPart, I
 	}
 
 	@Override
+	public void onKillCommand() {
+		setHealth(getMaxHealth());
+		sendMessage(new TextComponentTranslation(CSHARP_LAUGH1));
+	}
+
+	@SubscribeEvent
+	public void onAttack(LivingAttackEvent event){
+		if(event.getSource().getTrueSource() instanceof FakePlayer) {
+			event.setCanceled(true);
+			sendMessage(new TextComponentTranslation(CSHARP_LAUGH2));
+		}
+	}
+
+	@SubscribeEvent
+	public void onDeath(LivingDeathEvent event){
+		Entity source=event.getSource().getTrueSource();
+		Entity deathEntity=event.getEntity();
+		if(deathEntity instanceof EntityCSharp) {
+			if (!(source instanceof EntityPlayer) || source instanceof FakePlayer) {
+				event.setCanceled(true);
+				((EntityCSharp) deathEntity).setHealth(getMaxHealth());
+				sendMessage(new TextComponentTranslation(CSHARP_LAUGH2));
+			}
+			sendMessage(new TextComponentTranslation(CSHARP_DEATH));
+			captureDrops().add(new EntityItem(world, deathEntity.posX, deathEntity.posY, deathEntity.posZ,
+					new ItemStack(new ItemJavaEye(lambdazation, new Item.Properties()))));
+		}
+	}
+
+	@Override
 	public void setSwingingArms(boolean swingingArms) {
 
+	}
+
+	@Override
+	public boolean isNonBoss() {
+		return false;
 	}
 }

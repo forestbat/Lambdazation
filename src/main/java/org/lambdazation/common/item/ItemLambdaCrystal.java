@@ -1,8 +1,17 @@
 package org.lambdazation.common.item;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockGrass;
+import net.minecraft.block.material.Material;
+import net.minecraft.block.material.MaterialColor;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUseContext;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -15,7 +24,10 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Optional;
 
+import net.minecraft.world.World;
+import org.jetbrains.annotations.Contract;
 import org.lambdazation.Lambdazation;
+import org.lambdazation.common.block.BlockLambdaGrass;
 import org.lambdazation.common.core.LambdazationTermFactory.TermMetadata;
 import org.lambdazation.common.core.LambdazationTermFactory.TermNamer;
 import org.lambdazation.common.core.LambdazationTermFactory.TermNaming;
@@ -276,6 +288,25 @@ public final class ItemLambdaCrystal extends Item {
 
 	public Builder builder() {
 		return new Builder();
+	}
+
+	@Override
+	public EnumActionResult onItemUse(ItemUseContext context) {
+		World world=context.getWorld();
+		BlockPos pos=context.getPos();
+		Block block=world.getBlockState(pos).getBlock();
+		EntityPlayer player=context.getPlayer();
+		ItemStack itemStackRight=player.getHeldItemMainhand();
+		ItemStack itemStackLeft=player.getHeldItemOffhand();
+		if(block instanceof BlockGrass){
+			world.setBlockState(pos,new BlockLambdaGrass(lambdazation, Block.Properties.create(Material.GRASS)).getDefaultState());
+			if(itemStackLeft!=null)
+				itemStackLeft.shrink(1);
+			if(itemStackRight!=null)
+				itemStackRight.shrink(1);
+			return EnumActionResult.SUCCESS;
+		}
+		return EnumActionResult.FAIL;
 	}
 
 	public final class Builder implements GeneralizedBuilder<Builder, ItemStack> {

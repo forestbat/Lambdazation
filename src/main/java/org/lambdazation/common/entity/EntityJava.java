@@ -1,10 +1,7 @@
 package org.lambdazation.common.entity;
 
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.IEntityMultiPart;
-import net.minecraft.entity.MultiPartEntityPart;
-import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.*;
 import net.minecraft.entity.ai.EntityAIBreakBlock;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityMob;
@@ -28,12 +25,13 @@ import org.lambdazation.common.ai.EntityAIDestroyWorld;
 import org.lambdazation.common.ai.EntityAISpawnMinions;
 import org.lambdazation.common.item.ItemJavaEye;
 
-public final class EntityJava extends EntityMob implements IEntityMultiPart, IBoss {
+public final class EntityJava extends EntityMob implements IEntityMultiPart, IBoss, IRangedAttackMob {
 	public static final DataParameter<Integer> PHASE = EntityDataManager.createKey(EntityJava.class,
 		DataSerializers.VARINT);
 
 	public final Lambdazation lambdazation;
 	public static final String JAVA_LAUGH=I18n.format("entity.java.laugh_word");
+	public static final String JAVA_LAUGH2=I18n.format("entity.java.laugh_word2");
 	public static final String JAVA_DEATH = I18n.format("entity.java.death_word");
 	private final MultiPartEntityPart scorpionHead;
 	private final MultiPartEntityPart scorpionPliers1;
@@ -90,6 +88,7 @@ public final class EntityJava extends EntityMob implements IEntityMultiPart, IBo
 	public void registerAttributes() {
 		super.registerAttributes();
 		getAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(2048);
+		getAttribute(SharedMonsterAttributes.FLYING_SPEED).setBaseValue(5);
 		getAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(3);
 	}
 
@@ -107,7 +106,10 @@ public final class EntityJava extends EntityMob implements IEntityMultiPart, IBo
 
 	@SubscribeEvent
 	public void onAttack(LivingAttackEvent event){
-
+		if(event.getSource().getTrueSource() instanceof FakePlayer) {
+			event.setCanceled(true);
+			sendMessage(new TextComponentTranslation(JAVA_LAUGH2));
+		}
 	}
 
 	@SubscribeEvent
@@ -115,14 +117,29 @@ public final class EntityJava extends EntityMob implements IEntityMultiPart, IBo
 		Entity source=event.getSource().getTrueSource();
 		Entity deathEntity=event.getEntity();
 		if(deathEntity instanceof EntityJava) {
-			if(!(source instanceof EntityPlayer) || source instanceof FakePlayer) {
+			if (!(source instanceof EntityPlayer) || source instanceof FakePlayer) {
 				event.setCanceled(true);
 				((EntityJava) deathEntity).setHealth(getMaxHealth());
 				sendMessage(new TextComponentTranslation(JAVA_LAUGH));
 			}
 			sendMessage(new TextComponentTranslation(JAVA_DEATH));
-			captureDrops().add(new EntityItem(world, deathEntity.posX,deathEntity.posY,deathEntity.posZ,
-			       new ItemStack(new ItemJavaEye(lambdazation,new Item.Properties()))));
-			}
+			captureDrops().add(new EntityItem(world, deathEntity.posX, deathEntity.posY, deathEntity.posZ,
+					new ItemStack(new ItemJavaEye(lambdazation, new Item.Properties()))));
 		}
 	}
+
+	@Override
+	public boolean isNonBoss() {
+		return false;
+	}
+
+	@Override
+	public void attackEntityWithRangedAttack(EntityLivingBase target, float distanceFactor) {
+		//todo NYI
+	}
+
+	@Override
+	public void setSwingingArms(boolean swingingArms) {
+
+	}
+}
