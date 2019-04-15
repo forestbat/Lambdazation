@@ -19,7 +19,7 @@ public final class BiomeMusicValley extends Biome {
 
 	public BiomeMusicValley(Lambdazation lambdazation) {
 		super(new BiomeBuilder()
-			.surfaceBuilder(new CompositeSurfaceBuilder<>(DEFAULT_SURFACE_BUILDER, GRASS_DIRT_GRAVEL_SURFACE))
+			.surfaceBuilder(new CompositeSurfaceBuilder<>(DEFAULT_SURFACE_BUILDER, lambdazation.lamblambdazationBiomes.lambda_grass))
 			.precipitation(Biome.RainType.RAIN)
 			.category(Biome.Category.NONE)
 			.depth(0.2F)

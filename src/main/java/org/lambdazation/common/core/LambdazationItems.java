@@ -1,6 +1,9 @@
 package org.lambdazation.common.core;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import org.lambdazation.Lambdazation;
+import org.lambdazation.common.block.BlockLambdaGrass;
 import org.lambdazation.common.item.ItemCalibrator;
 import org.lambdazation.common.item.ItemJavaEye;
 import org.lambdazation.common.item.ItemLambdaCrystal;
@@ -26,6 +29,7 @@ public final class LambdazationItems {
 	public final ItemBlock itemBlockTransformer;
 	public final ItemBlock itemBlockCharger;
 	public final ItemBlock itemBlockReducer;
+	public final ItemBlock itemBlockLambdaGrass;
 
 	public LambdazationItems(Lambdazation lambdazation) {
 		this.lambdazation = lambdazation;
@@ -67,6 +71,9 @@ public final class LambdazationItems {
 			.rarity(EnumRarity.COMMON));
 		itemBlockCharger.setRegistryName(new ResourceLocation("lambdazation:charger"));
 		itemBlockReducer = new ItemBlock(lambdazation.lambdazationBlocks.blockReducer, new Item.Properties()
+			.group(lambdazation.lambdazationItemGroup)
+			.rarity(EnumRarity.COMMON));
+		itemBlockLambdaGrass=new ItemBlock(lambdazation.lambdazationBlocks.blockLambdaGrass,new Item.Properties()
 			.group(lambdazation.lambdazationItemGroup)
 			.rarity(EnumRarity.COMMON));
 		itemBlockReducer.setRegistryName(new ResourceLocation("lambdazation:reducer"));

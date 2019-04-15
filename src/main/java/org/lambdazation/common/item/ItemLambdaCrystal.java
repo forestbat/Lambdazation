@@ -2,7 +2,6 @@ package org.lambdazation.common.item;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockGrass;
-import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -15,7 +14,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import org.lambdazation.Lambdazation;
-import org.lambdazation.common.block.BlockLambdaGrass;
 import org.lambdazation.common.core.LambdazationTermFactory.*;
 import org.lambdazation.common.util.GeneralizedBuilder;
 import org.lambdazation.common.util.IO;
@@ -279,17 +277,17 @@ public final class ItemLambdaCrystal extends Item {
 
 	@Override
 	public EnumActionResult onItemUse(ItemUseContext context) {
-		World world=context.getWorld();
-		BlockPos pos=context.getPos();
-		Block block=world.getBlockState(pos).getBlock();
-		EntityPlayer player=context.getPlayer();
-		ItemStack itemStackRight=player.getHeldItemMainhand();
-		ItemStack itemStackLeft=player.getHeldItemOffhand();
-		if(block instanceof BlockGrass){
-			world.setBlockState(pos,new BlockLambdaGrass(lambdazation, Block.Properties.create(Material.GRASS)).getDefaultState());
-			if(itemStackLeft!=null)
+		World world = context.getWorld();
+		BlockPos pos = context.getPos();
+		Block block = world.getBlockState(pos).getBlock();
+		EntityPlayer player = context.getPlayer();
+		ItemStack itemStackRight = player.getHeldItemMainhand();
+		ItemStack itemStackLeft = player.getHeldItemOffhand();
+		if (block instanceof BlockGrass) {
+			world.setBlockState(pos, lambdazation.lambdazationBlocks.blockLambdaGrass.getDefaultState());
+			if (itemStackLeft != null)
 				itemStackLeft.shrink(1);
-			if(itemStackRight!=null)
+			if (itemStackRight != null)
 				itemStackRight.shrink(1);
 			return EnumActionResult.SUCCESS;
 		}

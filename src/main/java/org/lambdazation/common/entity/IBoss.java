@@ -15,10 +15,11 @@ public interface IBoss {
 	}
 
 	@SubscribeEvent
-	default void killPlayer(EntityEvent.EnteringChunk event, EntityLiving entityLiving){
-		Entity entity=event.getEntity();
-		if(entityLiving instanceof IBoss && entityLiving.getDistanceSq(entity)<192 && entity instanceof EntityPlayer)
-			if(((EntityPlayer) entity).abilities.isCreativeMode && entityLiving.getHealth()/entityLiving.getMaxHealth()<0.85)
+	default void killPlayer(EntityEvent.EnteringChunk event, EntityLiving entityLiving) {
+		Entity entity = event.getEntity();
+		if (entityLiving instanceof IBoss && entityLiving.getDistanceSq(entity) < 192 && entity instanceof EntityPlayer)
+			if (((EntityPlayer) entity).abilities.isCreativeMode
+				&& entityLiving.getHealth() / entityLiving.getMaxHealth() < 0.85)
 				entity.onKillCommand();
 	}
 }
