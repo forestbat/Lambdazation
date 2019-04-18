@@ -2,16 +2,24 @@ package org.lambdazation.common.entity;
 
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIBreakBlock;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.lambdazation.Lambdazation;
+
+import java.util.Iterator;
 
 public class EntityJavaObject extends EntityMob {
 	public final Lambdazation lambdazation;
@@ -44,5 +52,18 @@ public class EntityJavaObject extends EntityMob {
 			world.spawnEntity(entityJavaObject);
 			entityLiving.remove();
 		}
+	}
+
+	public void chanceSpawn() {
+		Iterator<Biome> iterator = ForgeRegistries.BIOMES.getValues().iterator();
+		while (iterator.hasNext())
+			iterator.next().getSpawns(EnumCreatureType.CREATURE).
+				add(new Biome.SpawnListEntry(lambdazation.lambdazationEntityTypes.entityTypeJavaObject,
+					1, 1, 10));
+	}
+
+	@Override
+	public void onDeath(DamageSource cause) {
+		captureDrops().add(new EntityItem(world,posX,posY,posZ,new ItemStack(lambdazation.lambdazationItems.itemOOPSoul)));//todo
 	}
 }
