@@ -42,6 +42,7 @@ public final class LambdazationEntityTypes {
 		e.getRegistry().register(entityTypeJava);
 		e.getRegistry().register(entityTypeCSharp);
 		e.getRegistry().register(entityTypeJavaObject);
+		e.getRegistry().register(entityTypeCSharpObject);
 	}
 
 	public void finalizeEntityTypes(RegistryEvent.Register<EntityType<?>> e) {
