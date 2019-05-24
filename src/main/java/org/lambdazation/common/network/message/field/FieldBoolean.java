@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import org.lambdazation.common.network.message.Message;
 
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.PacketByteBuf;
 
 public interface FieldBoolean<M extends Message<M>, F extends Message.Field<M, F, ?>>
 	extends Message.Field<M, F, Boolean> {
@@ -14,12 +14,12 @@ public interface FieldBoolean<M extends Message<M>, F extends Message.Field<M, F
 	}
 
 	@Override
-	default void encode(Boolean value, PacketBuffer buf) {
+	default void encode(Boolean value, PacketByteBuf buf) {
 		buf.writeBoolean(value);
 	}
 
 	@Override
-	default Boolean decode(PacketBuffer buf) {
+	default Boolean decode(PacketByteBuf buf) {
 		return buf.readBoolean();
 	}
 }

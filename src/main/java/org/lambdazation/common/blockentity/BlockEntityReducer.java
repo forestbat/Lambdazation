@@ -1,18 +1,18 @@
-package org.lambdazation.common.tileentity;
+package org.lambdazation.common.blockentity;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ISidedInventory;
-import net.minecraft.inventory.ItemStackHelper;
+import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntityLockable;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.tileentity.BlockEntityLockable;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ITickable;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.DefaultedList;
+import net.minecraft.util.text.TextComponent;
+import net.minecraft.util.text.TextComponent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -32,7 +32,7 @@ import org.lambdazation.common.inventory.field.InventoryField;
 import org.lambdazation.common.item.ItemLambdaCrystal;
 import org.lambdazation.common.state.properties.SlotState;
 
-public final class TileEntityReducer extends TileEntityLockable implements ISidedInventory, ITickable {
+public final class BlockEntityReducer extends BlockEntityLockable implements ISidedInventory, ITickable {
 	public static final int SLOT_INPUT_0 = 0;
 	public static final int SLOT_OUTPUT_1 = 1;
 
@@ -43,22 +43,22 @@ public final class TileEntityReducer extends TileEntityLockable implements ISide
 
 	public final Lambdazation lambdazation;
 
-	public final NonNullList<ItemStack> inventoryContents;
-	public NonNullList<ItemStack> prevInventoryContents;
+	public final DefaultedList<ItemStack> inventoryContents;
+	public DefaultedList<ItemStack> prevInventoryContents;
 	public TermAsyncResult<TermReductionResult> termReductionResult;
 	public int aggregateStep;
 	public int reduceSpeed;
 	public int reduceTime;
 
-	private final LazyOptional<? extends IItemHandler>[] itemHandlers = SidedInvWrapper.create(this, EnumFacing.DOWN,
-		EnumFacing.UP, EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.WEST, EnumFacing.EAST);
+	private final LazyOptional<? extends IItemHandler>[] itemHandlers = SidedInvWrapper.create(this, Direction.DOWN,
+		Direction.UP, Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST);
 
-	public TileEntityReducer(Lambdazation lambdazation) {
-		super(lambdazation.lambdazationTileEntityTypes.tileEntityTypeReducer);
+	public BlockEntityReducer(Lambdazation lambdazation) {
+		super(lambdazation.lambdazationBlockEntityTypes.tileEntityTypeReducer);
 
 		this.lambdazation = lambdazation;
 
-		this.inventoryContents = NonNullList.withSize(3, ItemStack.EMPTY);
+		this.inventoryContents = DefaultedList.create(3, ItemStack.EMPTY);
 		this.prevInventoryContents = null;
 		this.termReductionResult = null;
 		this.aggregateStep = 256;
@@ -67,23 +67,23 @@ public final class TileEntityReducer extends TileEntityLockable implements ISide
 	}
 
 	@Override
-	public void read(NBTTagCompound compound) {
-		super.read(compound);
+	public void fromTag(CompoundTag compound) {
+		super.fromTag(compound);
 
-		ItemStackHelper.loadAllItems(compound, inventoryContents);
+		Inventories.fromTag(compound, inventoryContents);
 		aggregateStep = compound.getInt("aggregateStep");
 		reduceSpeed = compound.getInt("reduceSpeed");
 		reduceTime = compound.getInt("reduceTime");
 	}
 
 	@Override
-	public NBTTagCompound write(NBTTagCompound compound) {
+	public CompoundTag write(CompoundTag compound) {
 		super.write(compound);
 
-		ItemStackHelper.saveAllItems(compound, inventoryContents);
-		compound.setInt("aggregateStep", aggregateStep);
-		compound.setInt("reduceSpeed", reduceSpeed);
-		compound.setInt("reduceTime", reduceTime);
+		Inventories.toTag(compound, inventoryContents);
+		compound.putInt("aggregateStep", aggregateStep);
+		compound.putInt("reduceSpeed", reduceSpeed);
+		compound.putInt("reduceTime", reduceTime);
 
 		return compound;
 	}
@@ -112,12 +112,12 @@ public final class TileEntityReducer extends TileEntityLockable implements ISide
 
 	@Override
 	public ItemStack decrStackSize(int index, int count) {
-		return ItemStackHelper.getAndSplit(inventoryContents, index, count);
+		return Inventories.getAndSplit(inventoryContents, index, count);
 	}
 
 	@Override
 	public ItemStack removeStackFromSlot(int index) {
-		return ItemStackHelper.getAndRemove(inventoryContents, index);
+		return Inventories.getAndRemove(inventoryContents, index);
 	}
 
 	@Override
@@ -132,17 +132,17 @@ public final class TileEntityReducer extends TileEntityLockable implements ISide
 	}
 
 	@Override
-	public boolean isUsableByPlayer(EntityPlayer player) {
+	public boolean isUsableByPlayer(PlayerEntity player) {
 		return true;
 	}
 
 	@Override
-	public void openInventory(EntityPlayer player) {
+	public void openInventory(PlayerEntity player) {
 
 	}
 
 	@Override
-	public void closeInventory(EntityPlayer player) {
+	public void closeInventory(PlayerEntity player) {
 
 	}
 
@@ -186,8 +186,8 @@ public final class TileEntityReducer extends TileEntityLockable implements ISide
 	}
 
 	@Override
-	public ITextComponent getName() {
-		return new TextComponentString("Reducer");
+	public TextComponent getName() {
+		return new TextComponent("Reducer");
 	}
 
 	@Override
@@ -196,12 +196,12 @@ public final class TileEntityReducer extends TileEntityLockable implements ISide
 	}
 
 	@Override
-	public ITextComponent getCustomName() {
+	public TextComponent getCustomName() {
 		return null;
 	}
 
 	@Override
-	public Container createContainer(InventoryPlayer playerInventory, EntityPlayer playerIn) {
+	public Container createContainer(PlayerInventory playerInventory, PlayerEntity playerIn) {
 		return new ContainerReducer(lambdazation, playerInventory, this);
 	}
 
@@ -228,7 +228,7 @@ public final class TileEntityReducer extends TileEntityLockable implements ISide
 	}
 
 	private void cache() {
-		prevInventoryContents = NonNullList.from(ItemStack.EMPTY,
+		prevInventoryContents = DefaultedList.from(ItemStack.EMPTY,
 			inventoryContents.stream().map(ItemStack::copy).toArray(ItemStack[]::new));
 	}
 
@@ -249,7 +249,7 @@ public final class TileEntityReducer extends TileEntityLockable implements ISide
 	}
 
 	private void update() {
-		if (world.isRemote)
+		if (world.isClient)
 			return;
 
 		cache();
@@ -298,7 +298,7 @@ public final class TileEntityReducer extends TileEntityLockable implements ISide
 	}
 
 	private void reduced() {
-		if (world.isRemote)
+		if (world.isClient)
 			return;
 
 		ItemLambdaCrystal itemLambdaCrystal = lambdazation.lambdazationItems.itemLambdaCrystal;
@@ -327,7 +327,7 @@ public final class TileEntityReducer extends TileEntityLockable implements ISide
 	}
 
 	@Override
-	public int[] getSlotsForFace(EnumFacing side) {
+	public int[] getSlotsForFace(Direction side) {
 		SlotState slotState = getBlockState().get(BlockReducer.FACING_PROPERTY_MAP.get(side));
 		switch (slotState) {
 		case NONE:
@@ -344,17 +344,17 @@ public final class TileEntityReducer extends TileEntityLockable implements ISide
 	}
 
 	@Override
-	public boolean canInsertItem(int index, ItemStack itemStackIn, EnumFacing direction) {
+	public boolean canInsertItem(int index, ItemStack itemStackIn, Direction direction) {
 		return isItemValidForSlot(index, itemStackIn);
 	}
 
 	@Override
-	public boolean canExtractItem(int index, ItemStack stack, EnumFacing direction) {
+	public boolean canExtractItem(int index, ItemStack stack, Direction direction) {
 		return true;
 	}
 
 	@Override
-	public <T> LazyOptional<T> getCapability(Capability<T> cap, EnumFacing side) {
+	public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
 		if (!removed && side != null && cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
 			switch (side) {
 			case DOWN:
@@ -377,37 +377,37 @@ public final class TileEntityReducer extends TileEntityLockable implements ISide
 		return super.getCapability(cap, side);
 	}
 
-	public enum InventoryFieldReducer implements InventoryField<TileEntityReducer> {
+	public enum InventoryFieldReducer implements InventoryField<BlockEntityReducer> {
 		AGGREGATE_STEP {
 			@Override
-			public int getField(TileEntityReducer inventory) {
+			public int getField(BlockEntityReducer inventory) {
 				return inventory.aggregateStep;
 			}
 
 			@Override
-			public void setField(TileEntityReducer inventory, int value) {
+			public void setField(BlockEntityReducer inventory, int value) {
 				inventory.aggregateStep = value;
 			}
 		},
 		REDUCE_SPEED {
 			@Override
-			public int getField(TileEntityReducer inventory) {
+			public int getField(BlockEntityReducer inventory) {
 				return inventory.reduceSpeed;
 			}
 
 			@Override
-			public void setField(TileEntityReducer inventory, int value) {
+			public void setField(BlockEntityReducer inventory, int value) {
 				inventory.reduceSpeed = value;
 			}
 		},
 		REDUCE_TIME {
 			@Override
-			public int getField(TileEntityReducer inventory) {
+			public int getField(BlockEntityReducer inventory) {
 				return inventory.reduceTime;
 			}
 
 			@Override
-			public void setField(TileEntityReducer inventory, int value) {
+			public void setField(BlockEntityReducer inventory, int value) {
 				inventory.reduceTime = value;
 			}
 		};

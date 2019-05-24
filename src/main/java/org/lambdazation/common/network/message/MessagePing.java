@@ -2,7 +2,7 @@ package org.lambdazation.common.network.message;
 
 import org.lambdazation.common.util.EnumMetadata;
 
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.PacketByteBuf;
 
 public final class MessagePing implements Message<MessagePing> {
 	public MessagePing() {
@@ -20,12 +20,12 @@ public final class MessagePing implements Message<MessagePing> {
 		public static final EnumMetadata<FieldPing> METADATA = new EnumMetadata<>(FieldPing.class);
 
 		@Override
-		public void encode(Void value, PacketBuffer buf) {
+		public void encode(Void value, PacketByteBuf buf) {
 			throw new AbstractMethodError();
 		}
 
 		@Override
-		public Void decode(PacketBuffer buf) {
+		public Void decode(PacketByteBuf buf) {
 			throw new AbstractMethodError();
 		}
 

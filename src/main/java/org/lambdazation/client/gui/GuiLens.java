@@ -9,19 +9,19 @@ import org.lamcalcj.pretty.PrettyPrint;
 
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Container;
-import net.minecraft.inventory.IContainerListener;
+import net.minecraft.inventory.ContainerListener;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.DefaultedList;
+import net.minecraft.util.Identifier;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public final class GuiLens extends GuiContainer implements IContainerListener {
-	public static final ResourceLocation LENS_RESOURCE = new ResourceLocation("lambdazation", "textures/gui/container/lens.png");
+public final class GuiLens extends GuiContainer implements ContainerListener {
+	public static final Identifier LENS_RESOURCE = new Identifier("lambdazation", "textures/gui/container/lens.png");
 
 	public final Lambdazation lambdazation;
 
@@ -29,7 +29,7 @@ public final class GuiLens extends GuiContainer implements IContainerListener {
 	public ItemStack prevItemStack;
 	public Optional<String> cachedTermSource;
 
-	public GuiLens(Lambdazation lambdazation, InventoryPlayer playerInventory) {
+	public GuiLens(Lambdazation lambdazation, PlayerInventory playerInventory) {
 		super(new ContainerLens(lambdazation, playerInventory));
 
 		this.lambdazation = lambdazation;
@@ -85,7 +85,7 @@ public final class GuiLens extends GuiContainer implements IContainerListener {
 	}
 
 	@Override
-	public void sendAllContents(Container containerToSend, NonNullList<ItemStack> itemsList) {
+	public void sendAllContents(Container containerToSend, DefaultedList<ItemStack> itemsList) {
 		if (containerToSend.equals(containerLens) && itemsList.size() > 0)
 			detectChanges(itemsList.get(0));
 	}

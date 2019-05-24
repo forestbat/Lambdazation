@@ -1,5 +1,7 @@
 package org.lambdazation.client.core;
 
+import net.minecraft.client.MinecraftClientClient;
+import net.minecraft.client.gui.screen.Screen;
 import org.lambdazation.Lambdazation;
 import org.lambdazation.client.gui.GuiCalibrator;
 import org.lambdazation.client.gui.GuiCharger;
@@ -13,15 +15,15 @@ import org.lambdazation.common.inventory.ContainerCrystallizer;
 import org.lambdazation.common.inventory.ContainerLens;
 import org.lambdazation.common.inventory.ContainerReducer;
 import org.lambdazation.common.inventory.ContainerTransformer;
-import org.lambdazation.common.tileentity.TileEntityCharger;
-import org.lambdazation.common.tileentity.TileEntityCrystallizer;
-import org.lambdazation.common.tileentity.TileEntityReducer;
-import org.lambdazation.common.tileentity.TileEntityTransformer;
+import org.lambdazation.common.blockentity.BlockEntityCharger;
+import org.lambdazation.common.blockentity.BlockEntityCrystallizer;
+import org.lambdazation.common.blockentity.BlockEntityReducer;
+import org.lambdazation.common.blockentity.BlockEntityTransformer;
 
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.tileentity.BlockEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -35,57 +37,57 @@ public final class LambdazationGuiFactory {
 		this.lambdazation = lambdazation;
 	}
 
-	public GuiScreen openGui(FMLPlayMessages.OpenContainer msg) {
+	public Screen openGui(FMLPlayMessages.OpenContainer msg) {
 		if (msg.getId().equals(ContainerLens.GUI_ID)) {
-			InventoryPlayer playerInventory = Minecraft.getInstance().player.inventory;
+			PlayerInventory playerInventory = MinecraftClientClient.getInstance().player.inventory;
 
 			return new GuiLens(lambdazation, playerInventory);
 		} else if (msg.getId().equals(ContainerCalibrator.GUI_ID)) {
-			InventoryPlayer playerInventory = Minecraft.getInstance().player.inventory;
+			PlayerInventory playerInventory = MinecraftClient.getInstance().player.inventory;
 
 			return new GuiCalibrator(lambdazation, playerInventory);
 		} else if (msg.getId().equals(ContainerCrystallizer.GUI_ID)) {
 			BlockPos blockPos = msg.getAdditionalData().readBlockPos();
-			TileEntity tileEntity = Minecraft.getInstance().world.getTileEntity(blockPos);
+			BlockEntity tileEntity = MinecraftClient.getInstance().world.getBlockEntity(blockPos);
 
-			InventoryPlayer playerInventory = Minecraft.getInstance().player.inventory;
+			PlayerInventory playerInventory = MinecraftClient.getInstance().player.inventory;
 
-			if (!(tileEntity instanceof TileEntityCrystallizer))
+			if (!(tileEntity instanceof BlockEntityCrystallizer))
 				return null;
-			TileEntityCrystallizer crystallizerInventory = (TileEntityCrystallizer) tileEntity;
+			BlockEntityCrystallizer crystallizerInventory = (BlockEntityCrystallizer) tileEntity;
 
 			return new GuiCrystallizer(lambdazation, playerInventory, crystallizerInventory);
 		} else if (msg.getId().equals(ContainerTransformer.GUI_ID)) {
 			BlockPos blockPos = msg.getAdditionalData().readBlockPos();
-			TileEntity tileEntity = Minecraft.getInstance().world.getTileEntity(blockPos);
+			BlockEntity tileEntity = MinecraftClient.getInstance().world.getBlockEntity(blockPos);
 
-			InventoryPlayer playerInventory = Minecraft.getInstance().player.inventory;
+			PlayerInventory playerInventory = MinecraftClient.getInstance().player.inventory;
 
-			if (!(tileEntity instanceof TileEntityTransformer))
+			if (!(tileEntity instanceof BlockEntityTransformer))
 				return null;
-			TileEntityTransformer transformerInventory = (TileEntityTransformer) tileEntity;
+			BlockEntityTransformer transformerInventory = (BlockEntityTransformer) tileEntity;
 
 			return new GuiTransformer(lambdazation, playerInventory, transformerInventory);
 		} else if (msg.getId().equals(ContainerCharger.GUI_ID)) {
 			BlockPos blockPos = msg.getAdditionalData().readBlockPos();
-			TileEntity tileEntity = Minecraft.getInstance().world.getTileEntity(blockPos);
+			BlockEntity tileEntity = MinecraftClient.getInstance().world.getBlockEntity(blockPos);
 
-			InventoryPlayer playerInventory = Minecraft.getInstance().player.inventory;
+			PlayerInventory playerInventory = MinecraftClient.getInstance().player.inventory;
 
-			if (!(tileEntity instanceof TileEntityCharger))
+			if (!(tileEntity instanceof BlockEntityCharger))
 				return null;
-			TileEntityCharger chargerInventory = (TileEntityCharger) tileEntity;
+			BlockEntityCharger chargerInventory = (BlockEntityCharger) tileEntity;
 
 			return new GuiCharger(lambdazation, playerInventory, chargerInventory);
 		} else if (msg.getId().equals(ContainerReducer.GUI_ID)) {
 			BlockPos blockPos = msg.getAdditionalData().readBlockPos();
-			TileEntity tileEntity = Minecraft.getInstance().world.getTileEntity(blockPos);
+			BlockEntity tileEntity = MinecraftClient.getInstance().world.getBlockEntity(blockPos);
 
-			InventoryPlayer playerInventory = Minecraft.getInstance().player.inventory;
+			PlayerInventory playerInventory = MinecraftClient.getInstance().player.inventory;
 
-			if (!(tileEntity instanceof TileEntityReducer))
+			if (!(tileEntity instanceof BlockEntityReducer))
 				return null;
-			TileEntityReducer reducerInventory = (TileEntityReducer) tileEntity;
+			BlockEntityReducer reducerInventory = (BlockEntityReducer) tileEntity;
 
 			return new GuiReducer(lambdazation, playerInventory, reducerInventory);
 		} else

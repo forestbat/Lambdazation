@@ -1,34 +1,36 @@
 package org.lambdazation.common.inventory;
 
+import net.minecraft.container.ContainerListener;
+import net.minecraft.util.Identifier;
 import org.lambdazation.Lambdazation;
 import org.lambdazation.common.inventory.field.InventoryField;
 import org.lambdazation.common.inventory.field.InventoryFieldCache;
 import org.lambdazation.common.inventory.field.InventoryRef;
-import org.lambdazation.common.tileentity.TileEntityTransformer;
+import org.lambdazation.common.blockentity.BlockEntityTransformer;
 import org.lambdazation.common.util.GeneralizedEnum;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Container;
-import net.minecraft.inventory.IContainerListener;
+import net.minecraft.inventory.ContainerListener;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 public final class ContainerTransformer extends Container {
-	public static final ResourceLocation GUI_ID = new ResourceLocation("lambdazation:transformer");
+	public static final Identifier GUI_ID = new Identifier("lambdazation:transformer");
 
 	public final Lambdazation lambdazation;
 
-	public final InventoryPlayer playerInventory;
-	public final TileEntityTransformer transformerInventory;
+	public final PlayerInventory playerInventory;
+	public final BlockEntityTransformer transformerInventory;
 	public final InventoryFieldCache<ContainerTransformer> inventoryFieldCache;
 
-	public ContainerTransformer(Lambdazation lambdazation, InventoryPlayer playerInventory,
-		TileEntityTransformer transformerInventory) {
+	public ContainerTransformer(Lambdazation lambdazation, PlayerInventory playerInventory,
+		BlockEntityTransformer transformerInventory) {
 		this.lambdazation = lambdazation;
 
 		this.playerInventory = playerInventory;
@@ -56,7 +58,7 @@ public final class ContainerTransformer extends Container {
 	}
 
 	@Override
-	public void addListener(IContainerListener listener) {
+	public void addListener(ContainerListener listener) {
 		super.addListener(listener);
 
 		InventoryRefTransformer.METADATA.values()
@@ -78,12 +80,12 @@ public final class ContainerTransformer extends Container {
 	}
 
 	@Override
-	public boolean canInteractWith(EntityPlayer playerIn) {
+	public boolean canInteractWith(PlayerEntity playerIn) {
 		return transformerInventory.isUsableByPlayer(playerIn);
 	}
 
 	@Override
-	public ItemStack transferStackInSlot(EntityPlayer playerIn, int index) {
+	public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
 		ItemStack affectedStack = ItemStack.EMPTY;
 
 		Slot slot = this.inventorySlots.get(index);
@@ -138,33 +140,33 @@ public final class ContainerTransformer extends Container {
 
 	public static abstract class InventoryRefTransformer<T extends IInventory>
 		extends GeneralizedEnum<InventoryRefTransformer<?>> implements InventoryRef<ContainerTransformer, T> {
-		public static final InventoryRefTransformer<InventoryPlayer> PLAYER;
-		public static final InventoryRefTransformer<TileEntityTransformer> TRANSFORMER;
+		public static final InventoryRefTransformer<PlayerInventory> PLAYER;
+		public static final InventoryRefTransformer<BlockEntityTransformer> TRANSFORMER;
 
 		public static final GeneralizedEnum.Metadata<InventoryRefTransformer<?>> METADATA;
 
 		static {
 			GeneralizedEnum.Metadata.Builder<InventoryRefTransformer<?>> builder = GeneralizedEnum.Metadata.builder();
 
-			class Player extends InventoryRefTransformer<InventoryPlayer> {
+			class Player extends InventoryRefTransformer<PlayerInventory> {
 				Player(String name, int ordinal) {
 					super(name, ordinal);
 				}
 
 				@Override
-				public InventoryPlayer getInventory(ContainerTransformer container) {
+				public PlayerInventory getInventory(ContainerTransformer container) {
 					return container.playerInventory;
 				}
 			}
 			PLAYER = builder.withValue("PLAYER", Player::new);
 
-			class Transformer extends InventoryRefTransformer<TileEntityTransformer> {
+			class Transformer extends InventoryRefTransformer<BlockEntityTransformer> {
 				Transformer(String name, int ordinal) {
 					super(name, ordinal);
 				}
 
 				@Override
-				public TileEntityTransformer getInventory(ContainerTransformer container) {
+				public BlockEntityTransformer getInventory(ContainerTransformer container) {
 					return container.transformerInventory;
 				}
 			}

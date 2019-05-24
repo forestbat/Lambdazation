@@ -3,26 +3,26 @@ package org.lambdazation.client.gui;
 import org.lambdazation.Lambdazation;
 import org.lambdazation.common.inventory.ContainerReducer;
 import org.lambdazation.common.inventory.ContainerReducer.InventoryRefReducer;
-import org.lambdazation.common.tileentity.TileEntityReducer;
-import org.lambdazation.common.tileentity.TileEntityReducer.InventoryFieldReducer;
+import org.lambdazation.common.blockentity.BlockEntityReducer;
+import org.lambdazation.common.blockentity.BlockEntityReducer.InventoryFieldReducer;
 
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.util.Identifier;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public final class GuiReducer extends GuiContainer {
-	public static final ResourceLocation REDUCER_RESOURCE = new ResourceLocation("lambdazation", "textures/gui/container/reducer.png");
+	public static final Identifier REDUCER_RESOURCE = new Identifier("lambdazation", "textures/gui/container/reducer.png");
 
 	public final Lambdazation lambdazation;
 
 	public final ContainerReducer containerReducer;
 
-	public GuiReducer(Lambdazation lambdazation, InventoryPlayer playerInventory,
-		TileEntityReducer reducerInventory) {
+	public GuiReducer(Lambdazation lambdazation, PlayerInventory playerInventory,
+		BlockEntityReducer reducerInventory) {
 		super(new ContainerReducer(lambdazation, playerInventory, reducerInventory));
 
 		this.lambdazation = lambdazation;

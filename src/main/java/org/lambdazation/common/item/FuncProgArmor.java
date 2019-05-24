@@ -1,6 +1,6 @@
 package org.lambdazation.common.item;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.ItemArmor;
@@ -14,13 +14,13 @@ public class FuncProgArmor extends ItemArmor {
 	public final LambdazationTermFactory lambdazationTermFactory;
 
 	public FuncProgArmor(Lambdazation lambdazation, LambdazationTermFactory lambdazationTermFactory) {
-		super(ArmorMaterial.valueOf("lambda_crystal"), EntityEquipmentSlot.CHEST, new Properties());
+		super(ArmorMaterial.valueOf("lambda_crystal"), EntityEquipmentSlot.CHEST, new Settings());
 		this.lambdazation = lambdazation;
 		this.lambdazationTermFactory = lambdazationTermFactory;
 	}
 
 	@Override
-	public void onArmorTick(ItemStack stack, World world, EntityPlayer player) {
+	public void onArmorTick(ItemStack stack, World world, PlayerEntity player) {
 
 	}
 }

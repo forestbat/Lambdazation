@@ -2,27 +2,27 @@ package org.lambdazation.common.inventory;
 
 import org.lambdazation.Lambdazation;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.ItemStackHelper;
+import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.DefaultedList;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.text.TextComponent;
+import net.minecraft.util.text.TextComponent;
 
 public final class ContainerLens extends Container {
-	public static final ResourceLocation GUI_ID = new ResourceLocation("lambdazation:lens");
+	public static final Identifier GUI_ID = new Identifier("lambdazation:lens");
 
 	public final Lambdazation lambdazation;
 
-	public final InventoryPlayer playerInventory;
+	public final PlayerInventory playerInventory;
 	public final InventoryLens lensInventory;
 
-	public ContainerLens(Lambdazation lambdazation, InventoryPlayer playerInventory) {
+	public ContainerLens(Lambdazation lambdazation, PlayerInventory playerInventory) {
 		this.lambdazation = lambdazation;
 
 		this.playerInventory = playerInventory;
@@ -39,19 +39,19 @@ public final class ContainerLens extends Container {
 	}
 
 	@Override
-	public boolean canInteractWith(EntityPlayer playerIn) {
+	public boolean canInteractWith(PlayerEntity playerIn) {
 		return lensInventory.isUsableByPlayer(playerIn);
 	}
 
 	@Override
-	public void onContainerClosed(EntityPlayer playerIn) {
+	public void onContainerClosed(PlayerEntity playerIn) {
 		super.onContainerClosed(playerIn);
-		if (!playerIn.world.isRemote)
+		if (!playerIn.world.isClient)
 			clearContainer(playerIn, playerIn.world, lensInventory);
 	}
 
 	@Override
-	public ItemStack transferStackInSlot(EntityPlayer playerIn, int index) {
+	public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
 		ItemStack affectedStack = ItemStack.EMPTY;
 
 		Slot slot = this.inventorySlots.get(index);
@@ -85,15 +85,15 @@ public final class ContainerLens extends Container {
 	public final class InventoryLens implements IInventory {
 		public static final int SLOT_INPUT_0 = 0;
 
-		public final NonNullList<ItemStack> inventoryContents;
+		public final DefaultedList<ItemStack> inventoryContents;
 
 		public InventoryLens() {
-			inventoryContents = NonNullList.withSize(1, ItemStack.EMPTY);
+			inventoryContents = DefaultedList.create(1, ItemStack.EMPTY);
 		}
 
 		@Override
-		public ITextComponent getName() {
-			return new TextComponentString("Lens");
+		public TextComponent getName() {
+			return new TextComponent("Lens");
 		}
 
 		@Override
@@ -102,7 +102,7 @@ public final class ContainerLens extends Container {
 		}
 
 		@Override
-		public ITextComponent getCustomName() {
+		public TextComponent getCustomName() {
 			return null;
 		}
 
@@ -123,12 +123,12 @@ public final class ContainerLens extends Container {
 
 		@Override
 		public ItemStack decrStackSize(int index, int count) {
-			return ItemStackHelper.getAndSplit(inventoryContents, index, count);
+			return Inventories.getAndSplit(inventoryContents, index, count);
 		}
 
 		@Override
 		public ItemStack removeStackFromSlot(int index) {
-			return ItemStackHelper.getAndRemove(inventoryContents, index);
+			return Inventories.getAndRemove(inventoryContents, index);
 		}
 
 		@Override
@@ -148,17 +148,17 @@ public final class ContainerLens extends Container {
 		}
 
 		@Override
-		public boolean isUsableByPlayer(EntityPlayer player) {
+		public boolean isUsableByPlayer(PlayerEntity player) {
 			return true;
 		}
 
 		@Override
-		public void openInventory(EntityPlayer player) {
+		public void openInventory(PlayerEntity player) {
 
 		}
 
 		@Override
-		public void closeInventory(EntityPlayer player) {
+		public void closeInventory(PlayerEntity player) {
 
 		}
 

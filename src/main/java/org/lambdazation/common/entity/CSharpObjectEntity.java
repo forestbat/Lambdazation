@@ -1,44 +1,38 @@
 package org.lambdazation.common.entity;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EnumCreatureType;
-import net.minecraft.entity.ai.*;
-import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.passive.EntityAnimal;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
+import net.minecraft.entity.EntityCategory;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.registries.ForgeRegistries;
+
 import org.lambdazation.Lambdazation;
 
 import java.util.Iterator;
 
-public class EntityCSharpObject extends EntityMob {
+public class CSharpObjectEntity extends MobEntity {
 	public final Lambdazation lambdazation;
 
-	public EntityCSharpObject(Lambdazation lambdazation, World world) {
+	public CSharpObjectEntity(Lambdazation lambdazation, EntityType<CSharpObjectEntity> entityType,World world) {
 		super(lambdazation.lambdazationEntityTypes.entityTypeCSharpObject, world);
 		this.lambdazation = lambdazation;
-		setAIMoveSpeed(6);
+		setMovementSpeed(6);
 	}
 
 	public void initEntityAI() {
-		this.tasks.addTask(1, new EntityAINearestAttackableTarget<>(this, EntityPlayer.class, true));
-		this.tasks.addTask(2, new EntityAINearestAttackableTarget<>(this, EntityJavaObject.class, true));
+		this.tasks.addTask(1, new EntityAINearestAttackableTarget<>(this, PlayerEntity.class, true));
+		this.tasks.addTask(2, new EntityAINearestAttackableTarget<>(this, JavaObjectEntity.class, true));
 		this.tasks.addTask(3, new EntityAIBreakBlock(Blocks.TURTLE_EGG, this, 1, 3));
 		//todo NYI
 	}
 
 	@SubscribeEvent
 	public void chanceSpawn(LivingDeathEvent event) {
-		if (event.getEntity() instanceof EntityCSharp) {
-			Iterator<Biome> iterator = ForgeRegistries.BIOMES.getValues().iterator();
+		if (event.getEntity() instanceof CSharpEntity) {
+			Iterator<Biome> iterator = Biome.BIOMES.iterator();
 			while (iterator.hasNext())
-				iterator.next().getSpawns(EnumCreatureType.CREATURE).
+				iterator.next().getSpawns(EntityCategory.CREATURE).
 					add(new Biome.SpawnListEntry(lambdazation.lambdazationEntityTypes.entityTypeCSharpObject,
 						1, 1, 10));
 		}
@@ -55,3 +49,4 @@ public class EntityCSharpObject extends EntityMob {
 		}
 	}
 }
+

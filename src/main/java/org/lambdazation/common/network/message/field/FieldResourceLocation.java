@@ -2,18 +2,18 @@ package org.lambdazation.common.network.message.field;
 
 import org.lambdazation.common.network.message.Message;
 
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.util.Identifier;
 
-public interface FieldResourceLocation<M extends Message<M>, F extends Message.Field<M, F, ?>>
-	extends Message.Field<M, F, ResourceLocation> {
+public interface FieldIdentifier<M extends Message<M>, F extends Message.Field<M, F, ?>>
+	extends Message.Field<M, F, Identifier> {
 	@Override
-	default void encode(ResourceLocation value, PacketBuffer buf) {
-		buf.writeResourceLocation(value);
+	default void encode(Identifier value, PacketByteBuf buf) {
+		buf.writeIdentifier(value);
 	}
 
 	@Override
-	default ResourceLocation decode(PacketBuffer buf) {
-		return buf.readResourceLocation();
+	default Identifier decode(PacketByteBuf buf) {
+		return buf.readIdentifier();
 	}
 }

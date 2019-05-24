@@ -7,12 +7,12 @@ import org.lambdazation.common.network.message.field.feature.FeatureLimit;
 
 import io.netty.handler.codec.DecoderException;
 import io.netty.handler.codec.EncoderException;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.PacketByteBuf;
 
 public interface FieldString<M extends Message<M>, F extends Message.Field<M, F, ?>>
 	extends Message.Field<M, F, String>, FeatureLimit {
 	@Override
-	default void encode(String value, PacketBuffer buf) {
+	default void encode(String value, PacketByteBuf buf) {
 		byte[] arr = value.getBytes(StandardCharsets.UTF_8);
 		if (limit() >= 0 && arr.length > limit())
 			throw new EncoderException("Limit reached (was " + arr.length + " bytes, max " + limit() + ")");
@@ -21,7 +21,7 @@ public interface FieldString<M extends Message<M>, F extends Message.Field<M, F,
 	}
 
 	@Override
-	default String decode(PacketBuffer buf) {
+	default String decode(PacketByteBuf buf) {
 		int len = buf.readVarInt();
 		if (len < 0)
 			throw new DecoderException("Receiving bytes less than zero");

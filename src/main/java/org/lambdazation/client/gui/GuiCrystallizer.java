@@ -3,26 +3,26 @@ package org.lambdazation.client.gui;
 import org.lambdazation.Lambdazation;
 import org.lambdazation.common.inventory.ContainerCrystallizer;
 import org.lambdazation.common.inventory.ContainerCrystallizer.InventoryRefCrystallizer;
-import org.lambdazation.common.tileentity.TileEntityCrystallizer;
-import org.lambdazation.common.tileentity.TileEntityCrystallizer.InventoryFieldCrystallizer;
+import org.lambdazation.common.blockentity.BlockEntityCrystallizer;
+import org.lambdazation.common.blockentity.BlockEntityCrystallizer.InventoryFieldCrystallizer;
 
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.util.Identifier;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public final class GuiCrystallizer extends GuiContainer {
-	public static final ResourceLocation CRYSTALLIZER_RESOURCE = new ResourceLocation("lambdazation", "textures/gui/container/crystallizer.png");
+	public static final Identifier CRYSTALLIZER_RESOURCE = new Identifier("lambdazation", "textures/gui/container/crystallizer.png");
 
 	public final Lambdazation lambdazation;
 
 	public final ContainerCrystallizer containerCrystallizer;
 
-	public GuiCrystallizer(Lambdazation lambdazation, InventoryPlayer playerInventory,
-		TileEntityCrystallizer crystallizerInventory) {
+	public GuiCrystallizer(Lambdazation lambdazation, PlayerInventory playerInventory,
+		BlockEntityCrystallizer crystallizerInventory) {
 		super(new ContainerCrystallizer(lambdazation, playerInventory, crystallizerInventory));
 
 		this.lambdazation = lambdazation;

@@ -2,18 +2,18 @@ package org.lambdazation.common.network.message.field;
 
 import org.lambdazation.common.network.message.Message;
 
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.util.text.TextComponent;
 
 public interface FieldTextComponent<M extends Message<M>, F extends Message.Field<M, F, ?>>
-	extends Message.Field<M, F, ITextComponent> {
+	extends Message.Field<M, F, TextComponent> {
 	@Override
-	default void encode(ITextComponent value, PacketBuffer buf) {
+	default void encode(TextComponent value, PacketByteBuf buf) {
 		buf.writeTextComponent(value);
 	}
 
 	@Override
-	default ITextComponent decode(PacketBuffer buf) {
+	default TextComponent decode(PacketByteBuf buf) {
 		return buf.readTextComponent();
 	}
 }

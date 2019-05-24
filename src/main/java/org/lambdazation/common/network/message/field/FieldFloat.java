@@ -5,7 +5,7 @@ import java.util.Optional;
 import org.lambdazation.common.network.message.Message;
 import org.lambdazation.common.network.message.field.feature.FeatureEndian;
 
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.PacketByteBuf;
 
 public interface FieldFloat<M extends Message<M>, F extends Message.Field<M, F, ?>>
 	extends Message.Field<M, F, Float>, FeatureEndian {
@@ -15,7 +15,7 @@ public interface FieldFloat<M extends Message<M>, F extends Message.Field<M, F, 
 	}
 
 	@Override
-	default void encode(Float value, PacketBuffer buf) {
+	default void encode(Float value, PacketByteBuf buf) {
 		if (networkEndian())
 			buf.writeFloat(value);
 		else
@@ -23,7 +23,7 @@ public interface FieldFloat<M extends Message<M>, F extends Message.Field<M, F, 
 	}
 
 	@Override
-	default Float decode(PacketBuffer buf) {
+	default Float decode(PacketByteBuf buf) {
 		if (networkEndian())
 			return buf.readFloat();
 		else

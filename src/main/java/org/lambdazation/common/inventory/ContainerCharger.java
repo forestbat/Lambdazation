@@ -4,31 +4,31 @@ import org.lambdazation.Lambdazation;
 import org.lambdazation.common.inventory.field.InventoryField;
 import org.lambdazation.common.inventory.field.InventoryFieldCache;
 import org.lambdazation.common.inventory.field.InventoryRef;
-import org.lambdazation.common.tileentity.TileEntityCharger;
+import org.lambdazation.common.blockentity.BlockEntityCharger;
 import org.lambdazation.common.util.GeneralizedEnum;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Container;
-import net.minecraft.inventory.IContainerListener;
+import net.minecraft.inventory.ContainerListener;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 public final class ContainerCharger extends Container {
-	public static final ResourceLocation GUI_ID = new ResourceLocation("lambdazation:charger");
+	public static final Identifier GUI_ID = new Identifier("lambdazation:charger");
 
 	public final Lambdazation lambdazation;
 
-	public final InventoryPlayer playerInventory;
-	public final TileEntityCharger chargerInventory;
+	public final PlayerInventory playerInventory;
+	public final BlockEntityCharger chargerInventory;
 	public final InventoryFieldCache<ContainerCharger> inventoryFieldCache;
 
-	public ContainerCharger(Lambdazation lambdazation, InventoryPlayer playerInventory,
-		TileEntityCharger chargerInventory) {
+	public ContainerCharger(Lambdazation lambdazation, PlayerInventory playerInventory,
+		BlockEntityCharger chargerInventory) {
 		this.lambdazation = lambdazation;
 
 		this.playerInventory = playerInventory;
@@ -56,7 +56,7 @@ public final class ContainerCharger extends Container {
 	}
 
 	@Override
-	public void addListener(IContainerListener listener) {
+	public void addListener(ContainerListener listener) {
 		super.addListener(listener);
 
 		InventoryRefCharger.METADATA.values()
@@ -78,12 +78,12 @@ public final class ContainerCharger extends Container {
 	}
 
 	@Override
-	public boolean canInteractWith(EntityPlayer playerIn) {
+	public boolean canInteractWith(PlayerEntity playerIn) {
 		return chargerInventory.isUsableByPlayer(playerIn);
 	}
 
 	@Override
-	public ItemStack transferStackInSlot(EntityPlayer playerIn, int index) {
+	public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
 		ItemStack affectedStack = ItemStack.EMPTY;
 
 		Slot slot = this.inventorySlots.get(index);
@@ -139,6 +139,7 @@ public final class ContainerCharger extends Container {
 	public final class SlotOutput extends Slot {
 		public SlotOutput(IInventory inventoryIn, int index, int xPosition, int yPosition) {
 			super(inventoryIn, index, xPosition, yPosition);
+
 		}
 
 		@Override
@@ -149,33 +150,33 @@ public final class ContainerCharger extends Container {
 
 	public static abstract class InventoryRefCharger<T extends IInventory>
 		extends GeneralizedEnum<InventoryRefCharger<?>> implements InventoryRef<ContainerCharger, T> {
-		public static final InventoryRefCharger<InventoryPlayer> PLAYER;
-		public static final InventoryRefCharger<TileEntityCharger> CHARGER;
+		public static final InventoryRefCharger<PlayerInventory> PLAYER;
+		public static final InventoryRefCharger<BlockEntityCharger> CHARGER;
 
 		public static final GeneralizedEnum.Metadata<InventoryRefCharger<?>> METADATA;
 
 		static {
 			GeneralizedEnum.Metadata.Builder<InventoryRefCharger<?>> builder = GeneralizedEnum.Metadata.builder();
 
-			class Player extends InventoryRefCharger<InventoryPlayer> {
+			class Player extends InventoryRefCharger<PlayerInventory> {
 				Player(String name, int ordinal) {
 					super(name, ordinal);
 				}
 
 				@Override
-				public InventoryPlayer getInventory(ContainerCharger container) {
+				public PlayerInventory getInventory(ContainerCharger container) {
 					return container.playerInventory;
 				}
 			}
 			PLAYER = builder.withValue("PLAYER", Player::new);
 
-			class Charger extends InventoryRefCharger<TileEntityCharger> {
+			class Charger extends InventoryRefCharger<BlockEntityCharger> {
 				Charger(String name, int ordinal) {
 					super(name, ordinal);
 				}
 
 				@Override
-				public TileEntityCharger getInventory(ContainerCharger container) {
+				public BlockEntityCharger getInventory(ContainerCharger container) {
 					return container.chargerInventory;
 				}
 			}

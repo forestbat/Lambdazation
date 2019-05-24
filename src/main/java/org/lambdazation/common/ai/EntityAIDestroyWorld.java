@@ -1,13 +1,12 @@
 package org.lambdazation.common.ai;
 
 import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.Timer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.lambdazation.Lambdazation;
-import org.lambdazation.common.entity.EntityJava;
 
 import java.util.Iterator;
 
@@ -26,7 +25,7 @@ public class EntityAIDestroyWorld extends EntityAIBase {
 
 	@Override
 	public boolean shouldExecute() {
-		EntityPlayer closestPlayer = world.getClosestPlayerToEntity(entityJava, 32);
+		PlayerEntity closestPlayer = world.getClosestPlayerToEntity(entityJava, 32);
 		if (closestPlayer != null && !closestPlayer.abilities.isFlying) {
 			timer.updateTimer(0);
 			return closestPlayer.getDistance(entityJava) < 8 && Math.random() < 0.2;
@@ -46,7 +45,7 @@ public class EntityAIDestroyWorld extends EntityAIBase {
 
 	@Override
 	public void tick() {
-		EntityPlayer closestPlayer = world.getClosestPlayerToEntity(entityJava, 32);
+		PlayerEntity closestPlayer = world.getClosestPlayerToEntity(entityJava, 32);
 		if (closestPlayer != null) {
 			Iterable<BlockPos> blockPosIterable = BlockPos.getAllInBox(closestPlayer.getPosition(), closestPlayer
 				.getPosition()

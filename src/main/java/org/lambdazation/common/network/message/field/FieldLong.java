@@ -6,7 +6,7 @@ import org.lambdazation.common.network.message.Message;
 import org.lambdazation.common.network.message.field.feature.FeatureEndian;
 import org.lambdazation.common.network.message.field.feature.FeatureVarying;
 
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.PacketByteBuf;
 
 public interface FieldLong<M extends Message<M>, F extends Message.Field<M, F, ?>>
 	extends Message.Field<M, F, Long>, FeatureVarying, FeatureEndian {
@@ -16,7 +16,7 @@ public interface FieldLong<M extends Message<M>, F extends Message.Field<M, F, ?
 	}
 
 	@Override
-	default void encode(Long value, PacketBuffer buf) {
+	default void encode(Long value, PacketByteBuf buf) {
 		if (varying())
 			buf.writeVarLong(value);
 		else if (networkEndian())
@@ -26,7 +26,7 @@ public interface FieldLong<M extends Message<M>, F extends Message.Field<M, F, ?
 	}
 
 	@Override
-	default Long decode(PacketBuffer buf) {
+	default Long decode(PacketByteBuf buf) {
 		if (varying())
 			return buf.readVarLong();
 		else if (networkEndian())

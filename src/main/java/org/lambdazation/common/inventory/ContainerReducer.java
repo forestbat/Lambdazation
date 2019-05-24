@@ -4,31 +4,31 @@ import org.lambdazation.Lambdazation;
 import org.lambdazation.common.inventory.field.InventoryField;
 import org.lambdazation.common.inventory.field.InventoryFieldCache;
 import org.lambdazation.common.inventory.field.InventoryRef;
-import org.lambdazation.common.tileentity.TileEntityReducer;
+import org.lambdazation.common.blockentity.BlockEntityReducer;
 import org.lambdazation.common.util.GeneralizedEnum;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Container;
-import net.minecraft.inventory.IContainerListener;
+import net.minecraft.inventory.ContainerListener;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 public final class ContainerReducer extends Container {
-	public static final ResourceLocation GUI_ID = new ResourceLocation("lambdazation:reducer");
+	public static final Identifier GUI_ID = new Identifier("lambdazation:reducer");
 
 	public final Lambdazation lambdazation;
 
-	public final InventoryPlayer playerInventory;
-	public final TileEntityReducer reducerInventory;
+	public final PlayerInventory playerInventory;
+	public final BlockEntityReducer reducerInventory;
 	public final InventoryFieldCache<ContainerReducer> inventoryFieldCache;
 
-	public ContainerReducer(Lambdazation lambdazation, InventoryPlayer playerInventory,
-		TileEntityReducer reducerInventory) {
+	public ContainerReducer(Lambdazation lambdazation, PlayerInventory playerInventory,
+		BlockEntityReducer reducerInventory) {
 		this.lambdazation = lambdazation;
 
 		this.playerInventory = playerInventory;
@@ -55,7 +55,7 @@ public final class ContainerReducer extends Container {
 	}
 
 	@Override
-	public void addListener(IContainerListener listener) {
+	public void addListener(ContainerListener listener) {
 		super.addListener(listener);
 
 		InventoryRefReducer.METADATA.values()
@@ -77,12 +77,12 @@ public final class ContainerReducer extends Container {
 	}
 
 	@Override
-	public boolean canInteractWith(EntityPlayer playerIn) {
+	public boolean canInteractWith(PlayerEntity playerIn) {
 		return reducerInventory.isUsableByPlayer(playerIn);
 	}
 
 	@Override
-	public ItemStack transferStackInSlot(EntityPlayer playerIn, int index) {
+	public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
 		ItemStack affectedStack = ItemStack.EMPTY;
 
 		Slot slot = this.inventorySlots.get(index);
@@ -137,33 +137,33 @@ public final class ContainerReducer extends Container {
 
 	public static abstract class InventoryRefReducer<T extends IInventory>
 		extends GeneralizedEnum<InventoryRefReducer<?>> implements InventoryRef<ContainerReducer, T> {
-		public static final InventoryRefReducer<InventoryPlayer> PLAYER;
-		public static final InventoryRefReducer<TileEntityReducer> REDUCER;
+		public static final InventoryRefReducer<PlayerInventory> PLAYER;
+		public static final InventoryRefReducer<BlockEntityReducer> REDUCER;
 
 		public static final GeneralizedEnum.Metadata<InventoryRefReducer<?>> METADATA;
 
 		static {
 			GeneralizedEnum.Metadata.Builder<InventoryRefReducer<?>> builder = GeneralizedEnum.Metadata.builder();
 
-			class Player extends InventoryRefReducer<InventoryPlayer> {
+			class Player extends InventoryRefReducer<PlayerInventory> {
 				Player(String name, int ordinal) {
 					super(name, ordinal);
 				}
 
 				@Override
-				public InventoryPlayer getInventory(ContainerReducer container) {
+				public PlayerInventory getInventory(ContainerReducer container) {
 					return container.playerInventory;
 				}
 			}
 			PLAYER = builder.withValue("PLAYER", Player::new);
 
-			class Reducer extends InventoryRefReducer<TileEntityReducer> {
+			class Reducer extends InventoryRefReducer<BlockEntityReducer> {
 				Reducer(String name, int ordinal) {
 					super(name, ordinal);
 				}
 
 				@Override
-				public TileEntityReducer getInventory(ContainerReducer container) {
+				public BlockEntityReducer getInventory(ContainerReducer container) {
 					return container.reducerInventory;
 				}
 			}

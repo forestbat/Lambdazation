@@ -2,18 +2,18 @@ package org.lambdazation.common.network.message.field;
 
 import org.lambdazation.common.network.message.Message;
 
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.PacketByteBuf;
 
 public interface FieldCompoundTag<M extends Message<M>, F extends Message.Field<M, F, ?>>
-	extends Message.Field<M, F, NBTTagCompound> {
+	extends Message.Field<M, F, CompoundTag> {
 	@Override
-	default void encode(NBTTagCompound value, PacketBuffer buf) {
+	default void encode(CompoundTag value, PacketByteBuf buf) {
 		buf.writeCompoundTag(value);
 	}
 
 	@Override
-	default NBTTagCompound decode(PacketBuffer buf) {
+	default CompoundTag decode(PacketByteBuf buf) {
 		return buf.readCompoundTag();
 	}
 }

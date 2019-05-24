@@ -1,13 +1,17 @@
 package org.lambdazation.common.entity;
 
+import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.EntityAIBreakBlock;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
@@ -21,19 +25,15 @@ import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.lambdazation.Lambdazation;
-import org.lambdazation.common.ai.EntityAIDestroyWorld;
-import org.lambdazation.common.ai.EntityAIMemoryError;
-import org.lambdazation.common.ai.EntityAISpawnMinions;
-import org.lambdazation.common.item.ItemJavaEye;
 
-public final class EntityJava extends EntityMob implements IEntityMultiPart, IBoss, IRangedAttackMob {
-	public static final DataParameter<Integer> PHASE = EntityDataManager.createKey(EntityJava.class,
-		DataSerializers.VARINT);
+public final class JavaEntity extends MobEntity implements IBoss{
+	public static final TrackedData<Integer> PHASE = DataTracker.registerData(JavaEntity.class,
+		TrackedDataHandlerRegistry.INTEGER);
 
 	public final Lambdazation lambdazation;
-	public static final String JAVA_LAUGH = I18n.format("entity.java.laugh_word");
-	public static final String JAVA_LAUGH2 = I18n.format("entity.java.laugh_word2");
-	public static final String JAVA_DEATH = I18n.format("entity.java.death_word");
+	public static final String JAVA_LAUGH = I18n.translate("entity.java.laugh_word");
+	public static final String JAVA_LAUGH2 = I18n.translate("entity.java.laugh_word2");
+	public static final String JAVA_DEATH = I18n.translate("entity.java.death_word");
 	private final MultiPartEntityPart scorpionHead;
 	private final MultiPartEntityPart scorpionPliers1;
 	private final MultiPartEntityPart scorpionPliers2;
@@ -50,7 +50,7 @@ public final class EntityJava extends EntityMob implements IEntityMultiPart, IBo
 	private final MultiPartEntityPart scorpionBody2;
 	private final MultiPartEntityPart scorpionBody3;
 
-	public EntityJava(Lambdazation lambdazation, World world) {
+	public JavaEntity(Lambdazation lambdazation, EntityType<JavaEntity> entityType,World world) {
 		super(lambdazation.lambdazationEntityTypes.entityTypeJava, world);
 		this.lambdazation = lambdazation;
 		this.setSize(0.9F, 3.5F);
@@ -124,15 +124,14 @@ public final class EntityJava extends EntityMob implements IEntityMultiPart, IBo
 			.getSource()
 			.getTrueSource();
 		Entity deathEntity = event.getEntity();
-		if (deathEntity instanceof EntityJava) {
-			if (!(source instanceof EntityPlayer) || source instanceof FakePlayer) {
+		if (deathEntity instanceof JavaEntity) {
+			if (!(source instanceof PlayerEntity) || source instanceof FakePlayer) {
 				event.setCanceled(true);
-				((EntityJava) deathEntity).setHealth(getMaxHealth());
+				((JavaEntity) deathEntity).setHealth(getMaxHealth());
 				sendMessage(new TextComponentTranslation(JAVA_LAUGH));
 			}
 			sendMessage(new TextComponentTranslation(JAVA_DEATH));
-			captureDrops().add(new EntityItem(world, deathEntity.posX, deathEntity.posY, deathEntity.posZ,
-				new ItemStack(new ItemJavaEye(lambdazation, new Item.Properties()))));
+			dropStack(new ItemStack(lambdazation.lambdazationItems.itemOOPSoul));
 		}
 	}
 

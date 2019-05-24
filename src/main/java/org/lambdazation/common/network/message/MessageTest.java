@@ -16,7 +16,7 @@ import org.lambdazation.common.network.message.field.FieldFloat;
 import org.lambdazation.common.network.message.field.FieldInteger;
 import org.lambdazation.common.network.message.field.FieldItemStack;
 import org.lambdazation.common.network.message.field.FieldLong;
-import org.lambdazation.common.network.message.field.FieldResourceLocation;
+import org.lambdazation.common.network.message.field.FieldIdentifier;
 import org.lambdazation.common.network.message.field.FieldShort;
 import org.lambdazation.common.network.message.field.FieldString;
 import org.lambdazation.common.network.message.field.FieldTextComponent;
@@ -25,10 +25,10 @@ import org.lambdazation.common.util.EnumBoolean;
 import org.lambdazation.common.util.GeneralizedEnum;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponent;
 
 public final class MessageTest implements Message<MessageTest> {
 	public final BlockPos p0;
@@ -36,17 +36,17 @@ public final class MessageTest implements Message<MessageTest> {
 	public final byte p2;
 	public final byte[] p3;
 	public final char p4;
-	public final NBTTagCompound p5;
+	public final CompoundTag p5;
 	public final double p6;
 	public final EnumBoolean p7;
 	public final float p8;
 	public final int p9;
 	public final ItemStack p10;
 	public final long p11;
-	public final ResourceLocation p12;
+	public final Identifier p12;
 	public final short p13;
 	public final String p14;
-	public final ITextComponent p15;
+	public final TextComponent p15;
 	public final UUID p16;
 
 	public MessageTest(BuilderGeneric<MessageTest, FieldTest<?>>.Initializer initializer) {
@@ -101,17 +101,17 @@ public final class MessageTest implements Message<MessageTest> {
 		public static final FieldTest<Byte> P2;
 		public static final FieldTest<byte[]> P3;
 		public static final FieldTest<Character> P4;
-		public static final FieldTest<NBTTagCompound> P5;
+		public static final FieldTest<CompoundTag> P5;
 		public static final FieldTest<Double> P6;
 		public static final FieldTest<EnumBoolean> P7;
 		public static final FieldTest<Float> P8;
 		public static final FieldTest<Integer> P9;
 		public static final FieldTest<ItemStack> P10;
 		public static final FieldTest<Long> P11;
-		public static final FieldTest<ResourceLocation> P12;
+		public static final FieldTest<Identifier> P12;
 		public static final FieldTest<Short> P13;
 		public static final FieldTest<String> P14;
-		public static final FieldTest<ITextComponent> P15;
+		public static final FieldTest<TextComponent> P15;
 		public static final FieldTest<UUID> P16;
 
 		public static final GeneralizedEnum.Metadata<FieldTest<?>> METADATA;
@@ -184,13 +184,13 @@ public final class MessageTest implements Message<MessageTest> {
 			}
 			P4 = builder.withValue("P4", FieldP4::new);
 
-			class FieldP5 extends FieldTest<NBTTagCompound> implements FieldCompoundTag<MessageTest, FieldTest<?>> {
+			class FieldP5 extends FieldTest<CompoundTag> implements FieldCompoundTag<MessageTest, FieldTest<?>> {
 				FieldP5(String name, int ordinal) {
 					super(name, ordinal);
 				}
 
 				@Override
-				public NBTTagCompound get(MessageTest msg) {
+				public CompoundTag get(MessageTest msg) {
 					return msg.p5;
 				}
 
@@ -280,14 +280,14 @@ public final class MessageTest implements Message<MessageTest> {
 			}
 			P11 = builder.withValue("P11", FieldP11::new);
 
-			class FieldP12 extends FieldTest<ResourceLocation>
-				implements FieldResourceLocation<MessageTest, FieldTest<?>> {
+			class FieldP12 extends FieldTest<Identifier>
+				implements FieldIdentifier<MessageTest, FieldTest<?>> {
 				FieldP12(String name, int ordinal) {
 					super(name, ordinal);
 				}
 
 				@Override
-				public ResourceLocation get(MessageTest msg) {
+				public Identifier get(MessageTest msg) {
 					return msg.p12;
 				}
 
@@ -320,13 +320,13 @@ public final class MessageTest implements Message<MessageTest> {
 			}
 			P14 = builder.withValue("P14", FieldP14::new);
 
-			class FieldP15 extends FieldTest<ITextComponent> implements FieldTextComponent<MessageTest, FieldTest<?>> {
+			class FieldP15 extends FieldTest<TextComponent> implements FieldTextComponent<MessageTest, FieldTest<?>> {
 				FieldP15(String name, int ordinal) {
 					super(name, ordinal);
 				}
 
 				@Override
-				public ITextComponent get(MessageTest msg) {
+				public TextComponent get(MessageTest msg) {
 					return msg.p15;
 				}
 

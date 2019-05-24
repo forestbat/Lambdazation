@@ -2,16 +2,16 @@ package org.lambdazation.common.item;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockGrass;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.NonNullList;
+import net.minecraft.util.DefaultedList;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponent;
 import net.minecraft.world.World;
 import org.lambdazation.Lambdazation;
 import org.lambdazation.common.core.LambdazationTermFactory.*;
@@ -26,15 +26,15 @@ import java.util.Optional;
 public final class ItemLambdaCrystal extends Item {
 	public final Lambdazation lambdazation;
 
-	public ItemLambdaCrystal(Lambdazation lambdazation, Properties properties) {
+	public ItemLambdaCrystal(Lambdazation lambdazation, Settings properties) {
 		super(properties);
 
 		this.lambdazation = lambdazation;
 	}
 
 	@Override
-	public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
-		if (isInGroup(group)) {
+	public void fillItemGroup(ItemGroup itemGroup, DefaultedList<ItemStack> items) {
+		if (isInGroup(itemGroup)) {
 			// TODO Make default capacity and energy configurable.
 			int capacity = 1024;
 			int energy = 1024;
@@ -45,7 +45,7 @@ public final class ItemLambdaCrystal extends Item {
 					.energy(energy)
 					.accept(predefTerm::withCrystal)
 					.build()
-					.setDisplayName(new TextComponentString("Predef Term: " + predefTerm.name)));
+					.setDisplayName(new TextComponent("Predef Term: " + predefTerm.name)));
 			});
 		}
 	}
@@ -54,7 +54,7 @@ public final class ItemLambdaCrystal extends Item {
 		if (!equals(itemStack.getItem()))
 			return Optional.empty();
 
-		NBTTagCompound tag = itemStack.getOrCreateTag();
+		CompoundTag tag = itemStack.getOrCreateTag();
 		if (!tag.contains("capacity", 3))
 			return Optional.empty();
 		int capacity = tag.getInt("capacity");
@@ -65,8 +65,8 @@ public final class ItemLambdaCrystal extends Item {
 		if (!equals(itemStack.getItem()))
 			return;
 
-		NBTTagCompound tag = itemStack.getOrCreateTag();
-		tag.setInt("capacity", capacity);
+		CompoundTag tag = itemStack.getOrCreateTag();
+		tag.putInt("capacity", capacity);
 
 		int energy = getEnergy(itemStack).orElse(0);
 		itemStack.setDamage(Integer.MAX_VALUE - (int) ((double) energy / (double) capacity * Integer.MAX_VALUE));
@@ -76,7 +76,7 @@ public final class ItemLambdaCrystal extends Item {
 		if (!equals(itemStack.getItem()))
 			return Optional.empty();
 
-		NBTTagCompound tag = itemStack.getOrCreateTag();
+		CompoundTag tag = itemStack.getOrCreateTag();
 		if (!tag.contains("energy", 3))
 			return Optional.empty();
 		int energy = tag.getInt("energy");
@@ -87,8 +87,8 @@ public final class ItemLambdaCrystal extends Item {
 		if (!equals(itemStack.getItem()))
 			return;
 
-		NBTTagCompound tag = itemStack.getOrCreateTag();
-		tag.setInt("energy", energy);
+		CompoundTag tag = itemStack.getOrCreateTag();
+		tag.putInt("energy", energy);
 
 		int capacity = getCapacity(itemStack).orElse(0);
 		itemStack.setDamage(Integer.MAX_VALUE - (int) ((double) energy / (double) capacity * Integer.MAX_VALUE));
@@ -98,7 +98,7 @@ public final class ItemLambdaCrystal extends Item {
 		if (!equals(itemStack.getItem()))
 			return Optional.empty();
 
-		NBTTagCompound tag = itemStack.getOrCreateTag();
+		CompoundTag tag = itemStack.getOrCreateTag();
 		if (!tag.contains("term", 7))
 			return Optional.empty();
 		byte[] serializedTerm = tag.getByteArray("term");
@@ -150,20 +150,20 @@ public final class ItemLambdaCrystal extends Item {
 		byte termStateOrdinal = (byte) termStatistics.termState.ordinal();
 		int termHash = termStatistics.termHash;
 
-		NBTTagCompound tag = itemStack.getOrCreateTag();
+		CompoundTag tag = itemStack.getOrCreateTag();
 		tag.setByteArray("term", serializedTerm);
 		tag.setByteArray("termNaming", serializedTermNaming);
-		tag.setInt("termSize", termSize);
-		tag.setInt("termDepth", termDepth);
+		tag.putInt("termSize", termSize);
+		tag.putInt("termDepth", termDepth);
 		tag.setByte("termState", termStateOrdinal);
-		tag.setInt("termHash", termHash);
+		tag.putInt("termHash", termHash);
 	}
 
 	public Optional<Integer> getTermSize(ItemStack itemStack) {
 		if (!equals(itemStack.getItem()))
 			return Optional.empty();
 
-		NBTTagCompound tag = itemStack.getOrCreateTag();
+		CompoundTag tag = itemStack.getOrCreateTag();
 		if (!tag.contains("termSize", 3))
 			return Optional.empty();
 		int termSize = tag.getInt("termSize");
@@ -174,7 +174,7 @@ public final class ItemLambdaCrystal extends Item {
 		if (!equals(itemStack.getItem()))
 			return Optional.empty();
 
-		NBTTagCompound tag = itemStack.getOrCreateTag();
+		CompoundTag tag = itemStack.getOrCreateTag();
 		if (!tag.contains("termDepth", 3))
 			return Optional.empty();
 		int termDepth = tag.getInt("termDepth");
@@ -185,7 +185,7 @@ public final class ItemLambdaCrystal extends Item {
 		if (!equals(itemStack.getItem()))
 			return Optional.empty();
 
-		NBTTagCompound tag = itemStack.getOrCreateTag();
+		CompoundTag tag = itemStack.getOrCreateTag();
 		if (!tag.contains("termState", 1))
 			return Optional.empty();
 		byte termStateOrdinal = tag.getByte("termState");
@@ -200,7 +200,7 @@ public final class ItemLambdaCrystal extends Item {
 		if (!equals(itemStack.getItem()))
 			return Optional.empty();
 
-		NBTTagCompound tag = itemStack.getOrCreateTag();
+		CompoundTag tag = itemStack.getOrCreateTag();
 		if (!tag.contains("termHash", 3))
 			return Optional.empty();
 		int termHash = tag.getInt("termHash");
@@ -211,7 +211,7 @@ public final class ItemLambdaCrystal extends Item {
 		if (!equals(itemStack.getItem()))
 			return Optional.empty();
 
-		NBTTagCompound tag = itemStack.getOrCreateTag();
+		CompoundTag tag = itemStack.getOrCreateTag();
 		if (!tag.contains("term", 7))
 			return Optional.empty();
 		if (!tag.contains("termSize", 3))
@@ -246,24 +246,24 @@ public final class ItemLambdaCrystal extends Item {
 		byte termStateOrdinal = (byte) termRef.termState.ordinal();
 		int termHash = termRef.termHash;
 
-		NBTTagCompound tag = itemStack.getOrCreateTag();
+		CompoundTag tag = itemStack.getOrCreateTag();
 		tag.setByteArray("term", serializedTerm);
 		tag.removeTag("termNaming");
-		tag.setInt("termSize", termSize);
-		tag.setInt("termDepth", termDepth);
+		tag.putInt("termSize", termSize);
+		tag.putInt("termDepth", termDepth);
 		tag.setByte("termState", termStateOrdinal);
-		tag.setInt("termHash", termHash);
+		tag.putInt("termHash", termHash);
 	}
 
 	public boolean isAlphaEquivalent(ItemStack firstItemStack, ItemStack secondItemStack) {
 		if (!equals(firstItemStack.getItem()) || !equals(secondItemStack.getItem()))
 			return false;
 
-		NBTTagCompound firstTag = firstItemStack.getOrCreateTag();
+		CompoundTag firstTag = firstItemStack.getOrCreateTag();
 		if (!firstTag.contains("term", 7))
 			return false;
 		byte[] firstSerializedTerm = firstTag.getByteArray("term");
-		NBTTagCompound secondTag = secondItemStack.getOrCreateTag();
+		CompoundTag secondTag = secondItemStack.getOrCreateTag();
 		if (!secondTag.contains("term", 7))
 			return false;
 		byte[] secondSerializedTerm = secondTag.getByteArray("term");
@@ -280,7 +280,7 @@ public final class ItemLambdaCrystal extends Item {
 		World world = context.getWorld();
 		BlockPos pos = context.getPos();
 		Block block = world.getBlockState(pos).getBlock();
-		EntityPlayer player = context.getPlayer();
+		PlayerEntity player = context.getPlayer();
 		ItemStack itemStackRight = player.getHeldItemMainhand();
 		ItemStack itemStackLeft = player.getHeldItemOffhand();
 		if (block instanceof BlockGrass) {

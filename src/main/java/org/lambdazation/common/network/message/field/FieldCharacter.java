@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import org.lambdazation.common.network.message.Message;
 
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.PacketByteBuf;
 
 public interface FieldCharacter<M extends Message<M>, F extends Message.Field<M, F, ?>>
 	extends Message.Field<M, F, Character> {
@@ -14,12 +14,12 @@ public interface FieldCharacter<M extends Message<M>, F extends Message.Field<M,
 	}
 
 	@Override
-	default void encode(Character value, PacketBuffer buf) {
+	default void encode(Character value, PacketByteBuf buf) {
 		buf.writeChar(value);
 	}
 
 	@Override
-	default Character decode(PacketBuffer buf) {
+	default Character decode(PacketByteBuf buf) {
 		return buf.readChar();
 	}
 }

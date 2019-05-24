@@ -1,19 +1,19 @@
-package org.lambdazation.common.tileentity;
+package org.lambdazation.common.blockentity;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ISidedInventory;
-import net.minecraft.inventory.ItemStackHelper;
+import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntityFurnace;
-import net.minecraft.tileentity.TileEntityLockable;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.tileentity.BlockEntityFurnace;
+import net.minecraft.tileentity.BlockEntityLockable;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ITickable;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.DefaultedList;
+import net.minecraft.util.text.TextComponent;
+import net.minecraft.util.text.TextComponent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
@@ -32,7 +32,7 @@ import org.lambdazation.common.inventory.field.InventoryField;
 import org.lambdazation.common.item.ItemLambdaCrystal;
 import org.lambdazation.common.state.properties.SlotState;
 
-public final class TileEntityCharger extends TileEntityLockable implements ISidedInventory, ITickable, IEnergyStorage {
+public final class BlockEntityCharger extends BlockEntityLockable implements ISidedInventory, ITickable, IEnergyStorage {
 	public static final int SLOT_INPUT_0 = 0;
 	public static final int SLOT_FUEL_1 = 1;
 	public static final int SLOT_OUTPUT_2 = 2;
@@ -44,23 +44,23 @@ public final class TileEntityCharger extends TileEntityLockable implements ISide
 
 	public final Lambdazation lambdazation;
 
-	public final NonNullList<ItemStack> inventoryContents;
+	public final DefaultedList<ItemStack> inventoryContents;
 	public int capacity;
 	public int energy;
 	public int chargeSpeed;
 	public int burnSpeed;
 	public int burnTime;
 
-	private final LazyOptional<? extends IItemHandler>[] itemHandlers = SidedInvWrapper.create(this, EnumFacing.DOWN,
-		EnumFacing.UP, EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.WEST, EnumFacing.EAST);
+	private final LazyOptional<? extends IItemHandler>[] itemHandlers = SidedInvWrapper.create(this, Direction.DOWN,
+		Direction.UP, Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST);
 	private final LazyOptional<IEnergyStorage> energyStorage = LazyOptional.of(() -> this);
 
-	public TileEntityCharger(Lambdazation lambdazation) {
-		super(lambdazation.lambdazationTileEntityTypes.tileEntityTypeCharger);
+	public BlockEntityCharger(Lambdazation lambdazation) {
+		super(lambdazation.lambdazationBlockEntityTypes.tileEntityTypeCharger);
 
 		this.lambdazation = lambdazation;
 
-		this.inventoryContents = NonNullList.withSize(3, ItemStack.EMPTY);
+		this.inventoryContents = DefaultedList.create(3, ItemStack.EMPTY);
 		this.capacity = 8192;
 		this.energy = 0;
 		this.chargeSpeed = 1;
@@ -69,10 +69,10 @@ public final class TileEntityCharger extends TileEntityLockable implements ISide
 	}
 
 	@Override
-	public void read(NBTTagCompound compound) {
-		super.read(compound);
+	public void fromTag(CompoundTag compound) {
+		super.fromTag(compound);
 
-		ItemStackHelper.loadAllItems(compound, inventoryContents);
+		Inventories.fromTag(compound, inventoryContents);
 		capacity = compound.getInt("capacity");
 		energy = compound.getInt("energy");
 		chargeSpeed = compound.getInt("chargeSpeed");
@@ -81,15 +81,15 @@ public final class TileEntityCharger extends TileEntityLockable implements ISide
 	}
 
 	@Override
-	public NBTTagCompound write(NBTTagCompound compound) {
+	public CompoundTag write(CompoundTag compound) {
 		super.write(compound);
 
-		ItemStackHelper.saveAllItems(compound, inventoryContents);
-		compound.setInt("capacity", capacity);
-		compound.setInt("energy", energy);
-		compound.setInt("chargeSpeed", chargeSpeed);
-		compound.setInt("burnSpeed", burnSpeed);
-		compound.setInt("burnTime", burnTime);
+		Inventories.toTag(compound, inventoryContents);
+		compound.putInt("capacity", capacity);
+		compound.putInt("energy", energy);
+		compound.putInt("chargeSpeed", chargeSpeed);
+		compound.putInt("burnSpeed", burnSpeed);
+		compound.putInt("burnTime", burnTime);
 
 		return compound;
 	}
@@ -117,12 +117,12 @@ public final class TileEntityCharger extends TileEntityLockable implements ISide
 
 	@Override
 	public ItemStack decrStackSize(int index, int count) {
-		return ItemStackHelper.getAndSplit(inventoryContents, index, count);
+		return Inventories.getAndSplit(inventoryContents, index, count);
 	}
 
 	@Override
 	public ItemStack removeStackFromSlot(int index) {
-		return ItemStackHelper.getAndRemove(inventoryContents, index);
+		return Inventories.getAndRemove(inventoryContents, index);
 	}
 
 	@Override
@@ -137,17 +137,17 @@ public final class TileEntityCharger extends TileEntityLockable implements ISide
 	}
 
 	@Override
-	public boolean isUsableByPlayer(EntityPlayer player) {
+	public boolean isUsableByPlayer(PlayerEntity player) {
 		return true;
 	}
 
 	@Override
-	public void openInventory(EntityPlayer player) {
+	public void openInventory(PlayerEntity player) {
 
 	}
 
 	@Override
-	public void closeInventory(EntityPlayer player) {
+	public void closeInventory(PlayerEntity player) {
 
 	}
 
@@ -193,8 +193,8 @@ public final class TileEntityCharger extends TileEntityLockable implements ISide
 	}
 
 	@Override
-	public ITextComponent getName() {
-		return new TextComponentString("Charger");
+	public TextComponent getName() {
+		return new TextComponent("Charger");
 	}
 
 	@Override
@@ -203,12 +203,12 @@ public final class TileEntityCharger extends TileEntityLockable implements ISide
 	}
 
 	@Override
-	public ITextComponent getCustomName() {
+	public TextComponent getCustomName() {
 		return null;
 	}
 
 	@Override
-	public Container createContainer(InventoryPlayer playerInventory, EntityPlayer playerIn) {
+	public Container createContainer(PlayerInventory playerInventory, PlayerEntity playerIn) {
 		return new ContainerCharger(lambdazation, playerInventory, this);
 	}
 
@@ -238,7 +238,7 @@ public final class TileEntityCharger extends TileEntityLockable implements ISide
 	}
 
 	private void burnFuel() {
-		if (world.isRemote)
+		if (world.isClient)
 			return;
 
 		ItemStack fuelItemStack = inventoryContents.get(SLOT_FUEL_1);
@@ -284,7 +284,7 @@ public final class TileEntityCharger extends TileEntityLockable implements ISide
 	}
 
 	private void charge() {
-		if (world.isRemote)
+		if (world.isClient)
 			return;
 
 		ItemLambdaCrystal itemLambdaCrystal = lambdazation.lambdazationItems.itemLambdaCrystal;
@@ -317,7 +317,7 @@ public final class TileEntityCharger extends TileEntityLockable implements ISide
 	}
 
 	private void move() {
-		if (world.isRemote)
+		if (world.isClient)
 			return;
 
 		ItemStack inputItemStack = inventoryContents.get(SLOT_INPUT_0);
@@ -330,7 +330,7 @@ public final class TileEntityCharger extends TileEntityLockable implements ISide
 	}
 
 	@Override
-	public int[] getSlotsForFace(EnumFacing side) {
+	public int[] getSlotsForFace(Direction side) {
 		SlotState slotState = getBlockState().get(BlockCharger.FACING_PROPERTY_MAP.get(side));
 		switch (slotState) {
 		case NONE:
@@ -347,17 +347,17 @@ public final class TileEntityCharger extends TileEntityLockable implements ISide
 	}
 
 	@Override
-	public boolean canInsertItem(int index, ItemStack itemStackIn, EnumFacing direction) {
+	public boolean canInsertItem(int index, ItemStack itemStackIn, Direction direction) {
 		return isItemValidForSlot(index, itemStackIn);
 	}
 
 	@Override
-	public boolean canExtractItem(int index, ItemStack stack, EnumFacing direction) {
+	public boolean canExtractItem(int index, ItemStack stack, Direction direction) {
 		return true;
 	}
 
 	@Override
-	public <T> LazyOptional<T> getCapability(Capability<T> cap, EnumFacing side) {
+	public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
 		if (!removed) {
 			if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
 				if (side != null) {
@@ -430,63 +430,63 @@ public final class TileEntityCharger extends TileEntityLockable implements ISide
 
 	public static int getBurnTime(ItemStack stack) {
 		int forgeBurnTime = stack.getBurnTime();
-		int vanillaBurnTime = TileEntityFurnace.getBurnTimes().getOrDefault(stack.getItem(), 0);
+		int vanillaBurnTime = BlockEntityFurnace.getBurnTimes().getOrDefault(stack.getItem(), 0);
 		return ForgeEventFactory.getItemBurnTime(stack, forgeBurnTime < 0 ? vanillaBurnTime : forgeBurnTime);
 	}
 
-	public enum InventoryFieldCharger implements InventoryField<TileEntityCharger> {
+	public enum InventoryFieldCharger implements InventoryField<BlockEntityCharger> {
 		CAPACITY {
 			@Override
-			public int getField(TileEntityCharger inventory) {
+			public int getField(BlockEntityCharger inventory) {
 				return inventory.capacity;
 			}
 
 			@Override
-			public void setField(TileEntityCharger inventory, int value) {
+			public void setField(BlockEntityCharger inventory, int value) {
 				inventory.capacity = value;
 			}
 		},
 		ENERGY {
 			@Override
-			public int getField(TileEntityCharger inventory) {
+			public int getField(BlockEntityCharger inventory) {
 				return inventory.energy;
 			}
 
 			@Override
-			public void setField(TileEntityCharger inventory, int value) {
+			public void setField(BlockEntityCharger inventory, int value) {
 				inventory.energy = value;
 			}
 		},
 		CHARGE_SPEED {
 			@Override
-			public int getField(TileEntityCharger inventory) {
+			public int getField(BlockEntityCharger inventory) {
 				return inventory.chargeSpeed;
 			}
 
 			@Override
-			public void setField(TileEntityCharger inventory, int value) {
+			public void setField(BlockEntityCharger inventory, int value) {
 				inventory.chargeSpeed = value;
 			}
 		},
 		BURN_SPEED {
 			@Override
-			public int getField(TileEntityCharger inventory) {
+			public int getField(BlockEntityCharger inventory) {
 				return inventory.burnSpeed;
 			}
 
 			@Override
-			public void setField(TileEntityCharger inventory, int value) {
+			public void setField(BlockEntityCharger inventory, int value) {
 				inventory.burnSpeed = value;
 			}
 		},
 		BURN_TIME {
 			@Override
-			public int getField(TileEntityCharger inventory) {
+			public int getField(BlockEntityCharger inventory) {
 				return inventory.burnTime;
 			}
 
 			@Override
-			public void setField(TileEntityCharger inventory, int value) {
+			public void setField(BlockEntityCharger inventory, int value) {
 				inventory.burnTime = value;
 			}
 		};

@@ -9,19 +9,19 @@ import org.lambdazation.common.item.ItemLambdaCrystal;
 
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Container;
-import net.minecraft.inventory.IContainerListener;
+import net.minecraft.inventory.ContainerListener;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.DefaultedList;
+import net.minecraft.util.Identifier;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public final class GuiCalibrator extends GuiContainer implements IContainerListener {
-	public static final ResourceLocation LENS_RESOURCE = new ResourceLocation("lambdazation", "textures/gui/container/calibrator.png");
+public final class GuiCalibrator extends GuiContainer implements ContainerListener {
+	public static final Identifier LENS_RESOURCE = new Identifier("lambdazation", "textures/gui/container/calibrator.png");
 
 	public final Lambdazation lambdazation;
 
@@ -33,7 +33,7 @@ public final class GuiCalibrator extends GuiContainer implements IContainerListe
 	public Optional<Integer> cachedTermSize;
 	public Optional<Integer> cachedTermDepth;
 
-	public GuiCalibrator(Lambdazation lambdazation, InventoryPlayer playerInventory) {
+	public GuiCalibrator(Lambdazation lambdazation, PlayerInventory playerInventory) {
 		super(new ContainerCalibrator(lambdazation, playerInventory));
 
 		this.lambdazation = lambdazation;
@@ -102,7 +102,7 @@ public final class GuiCalibrator extends GuiContainer implements IContainerListe
 	}
 
 	@Override
-	public void sendAllContents(Container containerToSend, NonNullList<ItemStack> itemsList) {
+	public void sendAllContents(Container containerToSend, DefaultedList<ItemStack> itemsList) {
 		if (containerToSend.equals(containerCalibrator) && itemsList.size() > 0)
 			detectChanges(itemsList.get(0));
 	}

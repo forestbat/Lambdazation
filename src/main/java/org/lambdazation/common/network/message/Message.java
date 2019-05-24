@@ -3,12 +3,11 @@ package org.lambdazation.common.network.message;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import net.fabricmc.fabric.api.network.PacketContext;
+import net.minecraft.util.PacketByteBuf;
 import org.lambdazation.common.util.EnumValue;
 import org.lambdazation.common.util.GeneralizedBuilder;
 import org.lambdazation.common.util.EnumValue.EnumObject;
-
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
 
 public interface Message<M extends Message<M>> {
 	default <F extends Field<M, F, T>, T> T get(F field) {
@@ -18,17 +17,17 @@ public interface Message<M extends Message<M>> {
 	M concrete();
 
 	interface Handler<M extends Message<M>, F extends Field<M, F, ?>> {
-		default void encode(M msg, PacketBuffer buf) {
+		default void encode(M msg, PacketByteBuf buf) {
 			metadata().values().forEachOrdered(field -> field.write(msg, buf));
 		}
 
-		default M decode(PacketBuffer buf) {
+		default M decode(PacketByteBuf buf) {
 			Builder<M, F, ?> builder = builder();
 			metadata().values().forEachOrdered(field -> field.read(builder, buf));
 			return builder.build();
 		}
 
-		default void consume(M msg, Supplier<NetworkEvent.Context> ctx) {
+		default void consume(M msg, Supplier<PacketContext> ctx) {
 			handle(msg, ctx.get());
 		}
 
@@ -36,7 +35,7 @@ public interface Message<M extends Message<M>> {
 
 		Builder<M, F, ?> builder();
 
-		void handle(M msg, NetworkEvent.Context ctx);
+		void handle(M msg, PacketContext ctx);
 	}
 
 	interface Builder<M extends Message<M>, F extends Field<M, F, ?>, B extends Builder<M, F, B>>
@@ -53,17 +52,17 @@ public interface Message<M extends Message<M>> {
 			return Optional.empty();
 		}
 
-		default void write(M msg, PacketBuffer buf) {
+		default void write(M msg, PacketByteBuf buf) {
 			encode(get(msg), buf);
 		}
 
-		default void read(Builder<M, F, ?> builder, PacketBuffer buf) {
+		default void read(Builder<M, F, ?> builder, PacketByteBuf buf) {
 			builder.with(this, decode(buf));
 		}
 
-		void encode(T value, PacketBuffer buf);
+		void encode(T value, PacketByteBuf buf);
 
-		T decode(PacketBuffer buf);
+		T decode(PacketByteBuf buf);
 
 		T get(M msg);
 	}

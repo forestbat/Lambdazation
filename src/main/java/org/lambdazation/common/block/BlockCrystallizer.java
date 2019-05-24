@@ -1,60 +1,55 @@
 package org.lambdazation.common.block;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockRenderType;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.state.StateFactory;
+import net.minecraft.state.property.EnumProperty;
+import net.minecraft.util.BlockRotation;
+import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.world.World;
+import org.lambdazation.Lambdazation;
+import org.lambdazation.common.blockentity.BlockEntityCrystallizer;
+import org.lambdazation.common.state.properties.SlotState;
+import org.lambdazation.common.util.RelativeFacing;
+import org.lambdazation.common.util.ValueBuilder;
+
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
 
-import org.lambdazation.Lambdazation;
-import org.lambdazation.common.state.properties.SlotState;
-import org.lambdazation.common.tileentity.TileEntityCrystallizer;
-import org.lambdazation.common.util.RelativeFacing;
-import org.lambdazation.common.util.ValueBuilder;
-
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockContainer;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.inventory.InventoryHelper;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.state.EnumProperty;
-import net.minecraft.state.StateContainer.Builder;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumBlockRenderType;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.Rotation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkHooks;
-
-public final class BlockCrystallizer extends BlockContainer {
+public final class BlockCrystallizer extends Block {
 	public static final EnumProperty<SlotState> DOWN = SlotState.SLOT_STATE_DOWN;
 	public static final EnumProperty<SlotState> UP = SlotState.SLOT_STATE_UP;
 	public static final EnumProperty<SlotState> NORTH = SlotState.SLOT_STATE_NORTH;
 	public static final EnumProperty<SlotState> SOUTH = SlotState.SLOT_STATE_SOUTH;
 	public static final EnumProperty<SlotState> WEST = SlotState.SLOT_STATE_WEST;
 	public static final EnumProperty<SlotState> EAST = SlotState.SLOT_STATE_EAST;
-	public static final Map<EnumFacing, EnumProperty<SlotState>> FACING_PROPERTY_MAP = ValueBuilder
-		.<Map<EnumFacing, EnumProperty<SlotState>>> build(new EnumMap<>(EnumFacing.class), builder -> {
-			builder.put(EnumFacing.DOWN, DOWN);
-			builder.put(EnumFacing.UP, UP);
-			builder.put(EnumFacing.NORTH, NORTH);
-			builder.put(EnumFacing.SOUTH, SOUTH);
-			builder.put(EnumFacing.WEST, WEST);
-			builder.put(EnumFacing.EAST, EAST);
+	public static final Map<Direction, EnumProperty<SlotState>> FACING_PROPERTY_MAP = ValueBuilder
+		.<Map<Direction, EnumProperty<SlotState>>> build(new EnumMap<>(Direction.class), builder -> {
+			builder.put(Direction.DOWN, DOWN);
+			builder.put(Direction.UP, UP);
+			builder.put(Direction.NORTH, NORTH);
+			builder.put(Direction.SOUTH, SOUTH);
+			builder.put(Direction.WEST, WEST);
+			builder.put(Direction.EAST, EAST);
 		}, Collections::unmodifiableMap);
 
 	public final Lambdazation lambdazation;
 
-	public BlockCrystallizer(Lambdazation lambdazation, Properties properties) {
+	public BlockCrystallizer(Lambdazation lambdazation, Settings properties) {
 		super(properties);
 
 		this.lambdazation = lambdazation;
 
-		setDefaultState(stateContainer.getBaseState()
+		setDefaultState(getStateFactory().getDefaultState()
 			.with(DOWN, SlotState.OUTPUT)
 			.with(UP, SlotState.OUTPUT)
 			.with(NORTH, SlotState.INPUT)
@@ -64,84 +59,71 @@ public final class BlockCrystallizer extends BlockContainer {
 	}
 
 	@Override
-	public EnumBlockRenderType getRenderType(IBlockState state) {
-		return EnumBlockRenderType.MODEL;
+	public BlockRenderType getRenderType(BlockState state) {
+		return BlockRenderType.MODEL;
 	}
 
 	@Override
-	public void onReplaced(IBlockState state, World worldIn, BlockPos pos, IBlockState newState, boolean isMoving) {
+	public void onBlockRemoved(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
 		if (state.getBlock() != newState.getBlock()) {
-			TileEntity tileentity = worldIn.getTileEntity(pos);
-			if (tileentity instanceof TileEntityCrystallizer) {
-				InventoryHelper.dropInventoryItems(worldIn, pos, (TileEntityCrystallizer) tileentity);
-				worldIn.updateComparatorOutputLevel(pos, this);
+			BlockEntity BlockEntity = worldIn.getBlockEntity(pos);
+			if (BlockEntity instanceof BlockEntityCrystallizer) {
+				dropStacks(state,worldIn, pos, BlockEntity);
+				worldIn.updateHorizontalAdjacent(pos, this);
 			}
 
-			super.onReplaced(state, worldIn, pos, newState, isMoving);
+			super.onBlockRemoved(state, worldIn, pos, newState, isMoving);
 		}
 	}
 
 	@Override
-	public boolean onBlockActivated(IBlockState state, World worldIn, BlockPos pos, EntityPlayer player, EnumHand hand,
-		EnumFacing side, float hitX, float hitY, float hitZ) {
-		if (worldIn.isRemote)
+	public boolean activate(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand hand,
+		BlockHitResult result) {
+		if (worldIn.isClient)
 			return true;
 
-		if (!(player instanceof EntityPlayerMP))
+		if (!(player instanceof ServerPlayerEntity))
 			return false;
-		EntityPlayerMP entityPlayerMP = (EntityPlayerMP) player;
+		ServerPlayerEntity ServerPlayerEntity = (ServerPlayerEntity) player;
 
-		TileEntity tileEntity = worldIn.getTileEntity(pos);
-		if (!(tileEntity instanceof TileEntityCrystallizer))
+		BlockEntity BlockEntity = worldIn.getBlockEntity(pos);
+		if (!(BlockEntity instanceof BlockEntityCrystallizer))
 			return false;
-		TileEntityCrystallizer tileEntityCrystallizer = (TileEntityCrystallizer) tileEntity;
+		BlockEntityCrystallizer blockEntityCrystallizer = (BlockEntityCrystallizer) BlockEntity;
 
-		NetworkHooks.openGui(entityPlayerMP, tileEntityCrystallizer, pos);
+		//NetworkHooks.openGui(ServerPlayerEntity, blockEntityCrystallizer, pos);
 
 		return true;
 	}
 
 	@Override
-	public TileEntity createNewTileEntity(IBlockReader worldIn) {
-		return new TileEntityCrystallizer(lambdazation);
-	}
-
-	@Override
-	public IBlockState getStateForPlacement(BlockItemUseContext context) {
-		EnumFacing placementFacing = context.getNearestLookingDirection();
-		EnumFacing placementHorizontalFacing = context.getPlacementHorizontalFacing();
+	public BlockState getPlacementState(ItemPlacementContext context) {
+		Direction placementFacing = context.getPlayerFacing();
+		Direction placementHorizontalFacing = context.getPlayerHorizontalFacing();
 		RelativeFacing relativeFacing = RelativeFacing.of(placementFacing.getOpposite(),
-			placementFacing.getAxis().equals(EnumFacing.Axis.Y)
-				? Rotation.values()[placementHorizontalFacing.getOpposite().getHorizontalIndex()]
-				: Rotation.NONE);
+			placementFacing.getAxis().equals(Direction.Axis.Y)
+				? BlockRotation.values()[placementHorizontalFacing.getOpposite().getHorizontal()]
+				: BlockRotation.NONE);
 
-		IBlockState resultState = getDefaultState();
-		for (EnumFacing facing : EnumFacing.values())
+		BlockState resultState = getDefaultState();
+		for (Direction facing : Direction.values())
 			resultState = resultState.with(FACING_PROPERTY_MAP.get(relativeFacing.transform(facing)),
 				getDefaultState().get(FACING_PROPERTY_MAP.get(facing)));
 		return resultState;
 	}
 
 	@Override
-	public IBlockState rotate(IBlockState state, Rotation rot) {
-		IBlockState resultState = state;
-		for (EnumFacing facing : EnumFacing.values())
+	public BlockState rotate(BlockState state, BlockRotation rot) {
+		BlockState resultState = state;
+		for (Direction facing : Direction.values())
 			resultState = resultState.with(FACING_PROPERTY_MAP.get(rot.rotate(facing)),
 				state.get(FACING_PROPERTY_MAP.get(facing)));
 		return resultState;
 	}
 
-	@Override
-	public IBlockState mirror(IBlockState state, Mirror mirrorIn) {
-		IBlockState resultState = state;
-		for (EnumFacing facing : EnumFacing.values())
-			resultState = resultState.with(FACING_PROPERTY_MAP.get(mirrorIn.mirror(facing)),
-				state.get(FACING_PROPERTY_MAP.get(facing)));
-		return resultState;
-	}
 
 	@Override
-	protected void fillStateContainer(Builder<Block, IBlockState> builder) {
+	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
 		FACING_PROPERTY_MAP.values().forEach(builder::add);
 	}
 }

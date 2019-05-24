@@ -1,51 +1,48 @@
 package org.lambdazation.common.core;
 
+import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.event.RegistryEvent;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.world.World;
 import org.lambdazation.Lambdazation;
-import org.lambdazation.common.entity.EntityCSharp;
-import org.lambdazation.common.entity.EntityCSharpObject;
-import org.lambdazation.common.entity.EntityJava;
-import org.lambdazation.common.entity.EntityJavaObject;
+import org.lambdazation.common.entity.*;
 
 public final class LambdazationEntityTypes {
 	public final Lambdazation lambdazation;
 
-	public final EntityType<EntityJava> entityTypeJava;
-	public final EntityType<EntityCSharp> entityTypeCSharp;
-	public final EntityType<EntityJavaObject> entityTypeJavaObject;
-	public final EntityType<EntityCSharpObject> entityTypeCSharpObject;
+	public final EntityType<JavaEntity> entityTypeJava;
+	public final EntityType<CSharpEntity> entityTypeCSharp;
+	public final EntityType<JavaObjectEntity> entityTypeJavaObject;
+	public final EntityType<CSharpEntityPart> entityTypeCSharpPart;
+	public final EntityType<CSharpObjectEntity> entityTypeCSharpObject;
 
 	public LambdazationEntityTypes(Lambdazation lambdazation) {
 		this.lambdazation = lambdazation;
-
-		entityTypeJava = EntityType.Builder
-			.create(EntityJava.class, world -> new EntityJava(lambdazation, world))
-			.build("lambdazation:java");
-		entityTypeJava.setRegistryName(new ResourceLocation("lambdazation:java"));
-		entityTypeCSharp = EntityType.Builder
-			.create(EntityCSharp.class, world -> new EntityCSharp(lambdazation, world))
+		entityTypeJava = EntityType.Builder.create(
+			(EntityType<JavaEntity> entityTypeJava, World world) -> new JavaEntity(lambdazation, entityTypeJava,
+				world),
+			EntityCategory.MONSTER).build("lambdazation:java");
+		Registry.register(Registry.ENTITY_TYPE, "lambdazation:entity_java", entityTypeJava);
+		entityTypeCSharp = EntityType.Builder.create
+			((EntityType<CSharpEntity> entityTypeCSharp, World world) -> new CSharpEntity(lambdazation,
+					entityTypeCSharp, world),
+				EntityCategory.MONSTER)
 			.build("lambdazation:csharp");
-		entityTypeCSharp.setRegistryName(new ResourceLocation("lambdazation:csharp"));
-		entityTypeJavaObject = EntityType.Builder
-			.create(EntityJavaObject.class, world -> new EntityJavaObject(lambdazation, world))
-			.build("lambdalazation:java_object");
-		entityTypeJavaObject.setRegistryName(new ResourceLocation("lambdalazation:java_object"));
-		entityTypeCSharpObject = EntityType.Builder
-			.create(EntityCSharpObject.class, world -> new EntityCSharpObject(lambdazation, world))
-			.build("lambdalazation:csharp_object");
-		entityTypeCSharpObject.setRegistryName(new ResourceLocation("lambdalazation:csharp_object"));
-	}
-
-	public void registerEntityTypes(RegistryEvent.Register<EntityType<?>> e) {
-		e.getRegistry().register(entityTypeJava);
-		e.getRegistry().register(entityTypeCSharp);
-		e.getRegistry().register(entityTypeJavaObject);
-		e.getRegistry().register(entityTypeCSharpObject);
-	}
-
-	public void finalizeEntityTypes(RegistryEvent.Register<EntityType<?>> e) {
-
+		Registry.register(Registry.ENTITY_TYPE, "lambdazation:entity_csharp", entityTypeCSharp);
+		entityTypeJavaObject = EntityType.Builder.create(
+			(EntityType<JavaObjectEntity> entityTypeJavaObject, World world) -> new JavaObjectEntity(lambdazation,
+				entityTypeJavaObject, world),
+			EntityCategory.MONSTER)
+			.build("lambdazation:java_object");
+		Registry.register(Registry.ENTITY_TYPE, "lambdazation:entity_java_object", entityTypeJavaObject);
+		entityTypeCSharpPart = EntityType.Builder.create(
+			(EntityType<CSharpEntityPart> entityTypeCSharpPart, World world) ->
+				new CSharpEntityPart(lambdazation,entityTypeCSharpPart, world,0,0), EntityCategory.MONSTER).
+			build("lambdazation:csharp_part");
+		Registry.register(Registry.ENTITY_TYPE, "lambdazation:entity_csharp_part", entityTypeCSharpPart);
+		entityTypeCSharpObject = EntityType.Builder.create(
+			(EntityType<CSharpObjectEntity> entityTypeCSharpObject, World world) -> new CSharpObjectEntity
+				(lambdazation,entityTypeCSharpObject,world), EntityCategory.MONSTER).build("lambdazation:csharp_object");
+		Registry.register(Registry.ENTITY_TYPE, "lambdazation:entity_csharp_object", entityTypeCSharpObject);
 	}
 }

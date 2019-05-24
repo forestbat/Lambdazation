@@ -1,18 +1,20 @@
-package org.lambdazation.common.tileentity;
+package org.lambdazation.common.blockentity;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.block.entity.LockableContainerBlockEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ISidedInventory;
-import net.minecraft.inventory.ItemStackHelper;
+import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntityLockable;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.tileentity.BlockEntityLockable;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ITickable;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.DefaultedList;
+import net.minecraft.util.text.TextComponent;
+import net.minecraft.util.text.TextComponent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -30,7 +32,7 @@ import org.lambdazation.common.state.properties.SlotState;
 import org.lamcalcj.ast.Lambda.App;
 import org.lamcalcj.ast.Lambda.Term;
 
-public final class TileEntityTransformer extends TileEntityLockable implements ISidedInventory, ITickable {
+public final class BlockEntityTransformer extends LockableContainerBlockEntity implements ISidedInventory, ITickable {
 	public static final int SLOT_INPUT_0 = 0;
 	public static final int SLOT_INPUT_1 = 1;
 	public static final int SLOT_OUTPUT_2 = 2;
@@ -42,21 +44,21 @@ public final class TileEntityTransformer extends TileEntityLockable implements I
 
 	public final Lambdazation lambdazation;
 
-	public final NonNullList<ItemStack> inventoryContents;
-	public NonNullList<ItemStack> prevInventoryContents;
+	public final DefaultedList<ItemStack> inventoryContents;
+	public DefaultedList<ItemStack> prevInventoryContents;
 	public boolean transforming;
 	public int totalTime;
 	public int transformTime;
 
-	private final LazyOptional<? extends IItemHandler>[] itemHandlers = SidedInvWrapper.create(this, EnumFacing.DOWN,
-		EnumFacing.UP, EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.WEST, EnumFacing.EAST);
+	private final LazyOptional<? extends IItemHandler>[] itemHandlers = SidedInvWrapper.create(this, Direction.DOWN,
+		Direction.UP, Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST);
 
-	public TileEntityTransformer(Lambdazation lambdazation) {
-		super(lambdazation.lambdazationTileEntityTypes.tileEntityTypeTransformer);
+	public BlockEntityTransformer(Lambdazation lambdazation) {
+		super(lambdazation.lambdazationBlockEntityTypes.tileEntityTypeTransformer);
 
 		this.lambdazation = lambdazation;
 
-		this.inventoryContents = NonNullList.withSize(3, ItemStack.EMPTY);
+		this.inventoryContents = DefaultedList.create(3, ItemStack.EMPTY);
 		this.prevInventoryContents = null;
 		this.transforming = false;
 		this.totalTime = 256;
@@ -64,28 +66,27 @@ public final class TileEntityTransformer extends TileEntityLockable implements I
 	}
 
 	@Override
-	public void read(NBTTagCompound compound) {
-		super.read(compound);
+	public void fromTag(CompoundTag compound) {
+		super.fromTag(compound);
 
-		ItemStackHelper.loadAllItems(compound, inventoryContents);
+		Inventories.fromTag(compound, inventoryContents);
 		totalTime = compound.getInt("totalTime");
 		transformTime = compound.getInt("transformTime");
 	}
 
 	@Override
-	public NBTTagCompound write(NBTTagCompound compound) {
-		super.write(compound);
+	public CompoundTag toTag(CompoundTag compound) {
+		super.toTag(compound);
 
-		ItemStackHelper.saveAllItems(compound, inventoryContents);
-		compound.setInt("totalTime", totalTime);
-		compound.setInt("transformTime", transformTime);
+		Inventories.toTag(compound, inventoryContents);
+		compound.putInt("totalTime", totalTime);
+		compound.putInt("transformTime", transformTime);
 
 		return compound;
 	}
 
 	@Override
-	public void remove() {
-		super.remove();
+	public void clear() {
 		Arrays.stream(itemHandlers).forEach(LazyOptional::invalidate);
 	}
 
@@ -106,12 +107,12 @@ public final class TileEntityTransformer extends TileEntityLockable implements I
 
 	@Override
 	public ItemStack decrStackSize(int index, int count) {
-		return ItemStackHelper.getAndSplit(inventoryContents, index, count);
+		return Inventories.splitStack(inventoryContents, index, count);
 	}
 
 	@Override
 	public ItemStack removeStackFromSlot(int index) {
-		return ItemStackHelper.getAndRemove(inventoryContents, index);
+		return Inventories.removeStack(inventoryContents, index);
 	}
 
 	@Override
@@ -126,17 +127,17 @@ public final class TileEntityTransformer extends TileEntityLockable implements I
 	}
 
 	@Override
-	public boolean isUsableByPlayer(EntityPlayer player) {
+	public boolean isUsableByPlayer(PlayerEntity player) {
 		return true;
 	}
 
 	@Override
-	public void openInventory(EntityPlayer player) {
+	public void openInventory(PlayerEntity player) {
 
 	}
 
 	@Override
-	public void closeInventory(EntityPlayer player) {
+	public void closeInventory(PlayerEntity player) {
 
 	}
 
@@ -182,8 +183,8 @@ public final class TileEntityTransformer extends TileEntityLockable implements I
 	}
 
 	@Override
-	public ITextComponent getName() {
-		return new TextComponentString("Transformer");
+	public TextComponent getName() {
+		return new TextComponent("Transformer");
 	}
 
 	@Override
@@ -192,18 +193,18 @@ public final class TileEntityTransformer extends TileEntityLockable implements I
 	}
 
 	@Override
-	public ITextComponent getCustomName() {
+	public TextComponent getCustomName() {
 		return null;
 	}
 
 	@Override
-	public Container createContainer(InventoryPlayer playerInventory, EntityPlayer playerIn) {
+	public Container createContainer(PlayerInventory playerInventory, PlayerEntity playerIn) {
 		return new ContainerTransformer(lambdazation, playerInventory, this);
 	}
 
 	@Override
 	public String getGuiID() {
-		return ContainerTransformer.GUI_ID.toString();
+		return ContainerTransformer.GUI_ID;
 	}
 
 	@Override
@@ -217,7 +218,7 @@ public final class TileEntityTransformer extends TileEntityLockable implements I
 	}
 
 	private void cache() {
-		prevInventoryContents = NonNullList.from(ItemStack.EMPTY,
+		prevInventoryContents = DefaultedList.from(ItemStack.EMPTY,
 			inventoryContents.stream().map(ItemStack::copy).toArray(ItemStack[]::new));
 	}
 
@@ -238,7 +239,7 @@ public final class TileEntityTransformer extends TileEntityLockable implements I
 	}
 
 	private void update() {
-		if (world.isRemote)
+		if (world.isClient)
 			return;
 
 		cache();
@@ -288,7 +289,7 @@ public final class TileEntityTransformer extends TileEntityLockable implements I
 	}
 
 	private void transformed() {
-		if (world.isRemote)
+		if (world.isClient)
 			return;
 
 		ItemLambdaCrystal itemLambdaCrystal = lambdazation.lambdazationItems.itemLambdaCrystal;
@@ -321,7 +322,7 @@ public final class TileEntityTransformer extends TileEntityLockable implements I
 	}
 
 	@Override
-	public int[] getSlotsForFace(EnumFacing side) {
+	public int[] getSlotsForFace(Direction side) {
 		SlotState slotState = getBlockState().get(BlockTransformer.FACING_PROPERTY_MAP.get(side));
 		switch (slotState) {
 		case NONE:
@@ -338,17 +339,17 @@ public final class TileEntityTransformer extends TileEntityLockable implements I
 	}
 
 	@Override
-	public boolean canInsertItem(int index, ItemStack itemStackIn, EnumFacing direction) {
+	public boolean canInsertItem(int index, ItemStack itemStackIn, Direction direction) {
 		return isItemValidForSlot(index, itemStackIn);
 	}
 
 	@Override
-	public boolean canExtractItem(int index, ItemStack stack, EnumFacing direction) {
+	public boolean canExtractItem(int index, ItemStack stack, Direction direction) {
 		return true;
 	}
 
 	@Override
-	public <T> LazyOptional<T> getCapability(Capability<T> cap, EnumFacing side) {
+	public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
 		if (!removed && side != null && cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
 			switch (side) {
 			case DOWN:
@@ -371,26 +372,26 @@ public final class TileEntityTransformer extends TileEntityLockable implements I
 		return super.getCapability(cap, side);
 	}
 
-	public enum InventoryFieldTransformer implements InventoryField<TileEntityTransformer> {
+	public enum InventoryFieldTransformer implements InventoryField<BlockEntityTransformer> {
 		TOTAL_TIME {
 			@Override
-			public int getField(TileEntityTransformer inventory) {
+			public int getField(BlockEntityTransformer inventory) {
 				return inventory.totalTime;
 			}
 
 			@Override
-			public void setField(TileEntityTransformer inventory, int value) {
+			public void setField(BlockEntityTransformer inventory, int value) {
 				inventory.totalTime = value;
 			}
 		},
 		TRANSFORM_TIME {
 			@Override
-			public int getField(TileEntityTransformer inventory) {
+			public int getField(BlockEntityTransformer inventory) {
 				return inventory.transformTime;
 			}
 
 			@Override
-			public void setField(TileEntityTransformer inventory, int value) {
+			public void setField(BlockEntityTransformer inventory, int value) {
 				inventory.transformTime = value;
 			}
 		};

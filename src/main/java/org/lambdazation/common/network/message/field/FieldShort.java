@@ -5,7 +5,7 @@ import java.util.Optional;
 import org.lambdazation.common.network.message.Message;
 import org.lambdazation.common.network.message.field.feature.FeatureEndian;
 
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.PacketByteBuf;
 
 public interface FieldShort<M extends Message<M>, F extends Message.Field<M, F, ?>>
 	extends Message.Field<M, F, Short>, FeatureEndian {
@@ -15,7 +15,7 @@ public interface FieldShort<M extends Message<M>, F extends Message.Field<M, F, 
 	}
 
 	@Override
-	default void encode(Short value, PacketBuffer buf) {
+	default void encode(Short value, PacketByteBuf buf) {
 		if (networkEndian())
 			buf.writeShort(value);
 		else
@@ -23,7 +23,7 @@ public interface FieldShort<M extends Message<M>, F extends Message.Field<M, F, 
 	}
 
 	@Override
-	default Short decode(PacketBuffer buf) {
+	default Short decode(PacketByteBuf buf) {
 		if (networkEndian())
 			return buf.readShort();
 		else

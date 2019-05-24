@@ -1,9 +1,9 @@
 package org.lambdazation.common.state.properties;
 
-import net.minecraft.state.EnumProperty;
-import net.minecraft.util.IStringSerializable;
+import net.minecraft.state.property.EnumProperty;
+import net.minecraft.util.StringIdentifiable;
 
-public enum SlotState implements IStringSerializable {
+public enum SlotState implements StringIdentifiable {
 	NONE("none"),
 	INPUT("input"),
 	OUTPUT("output"),
@@ -23,7 +23,7 @@ public enum SlotState implements IStringSerializable {
 	}
 
 	@Override
-	public String getName() {
+	public String asString() {
 		return name;
 	}
 }

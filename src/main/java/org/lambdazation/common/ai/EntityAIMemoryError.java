@@ -3,11 +3,9 @@ package org.lambdazation.common.ai;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 import org.lambdazation.Lambdazation;
-import org.lambdazation.common.entity.EntityJava;
-import org.lambdazation.common.entity.EntityJavaObject;
 
 public class EntityAIMemoryError extends EntityAIBase {
 	public final Lambdazation lambdazation;
@@ -33,6 +31,6 @@ public class EntityAIMemoryError extends EntityAIBase {
 
 	@Override
 	public void tick() {
-		entityJava.sendMessage(new TextComponentString("java.lang.OutOfMemoryError: Java heap space"));
+		entityJava.sendMessage(new TextComponent("java.lang.OutOfMemoryError: Java heap space"));
 	}
 }

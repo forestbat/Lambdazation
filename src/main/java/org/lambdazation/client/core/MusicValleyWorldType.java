@@ -2,7 +2,7 @@ package org.lambdazation.client.core;
 
 import net.minecraft.client.gui.GuiCreateWorld;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.api.distmarker.Dist;
@@ -15,7 +15,7 @@ import org.lambdazation.Lambdazation;
 public class MusicValleyWorldType extends WorldType {
     private Lambdazation lambdazation;
     public WorldType MUSIC_VALLEY=new WorldType("MUSIC_VALLEY").setCustomOptions(true);
-    private Biome musicValley=ForgeRegistries.BIOMES.getValue(new ResourceLocation("lambdazation:music_valley"));
+    private Biome musicValley=ForgeRegistries.BIOMES.getValue(new Identifier("lambdazation:music_valley"));
     public MusicValleyWorldType(){
         super("MUSIC_VALLEY");
     }

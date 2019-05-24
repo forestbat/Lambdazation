@@ -9,15 +9,15 @@ import org.lambdazation.common.util.GeneralizedBuilder;
 import org.lambdazation.common.util.StreamIterable;
 
 import net.minecraft.inventory.Container;
-import net.minecraft.inventory.IContainerListener;
+import net.minecraft.inventory.ContainerListener;
 import net.minecraft.inventory.IInventory;
 
 public final class InventoryFieldCache<C extends Container> {
 	private final C container;
-	private final List<IContainerListener> listeners;
+	private final List<ContainerListener> listeners;
 	private final Map<IInventory, Entry> entries;
 
-	private InventoryFieldCache(C container, List<IContainerListener> listeners,
+	private InventoryFieldCache(C container, List<ContainerListener> listeners,
 		Map<IInventory, Entry> entries) {
 		this.container = container;
 		this.listeners = listeners;
@@ -35,7 +35,7 @@ public final class InventoryFieldCache<C extends Container> {
 
 				if (currentValue != cachedValue) {
 					entry.setField(localFieldID, currentValue);
-					for (IContainerListener listener : listeners)
+					for (ContainerListener listener : listeners)
 						listener.sendWindowProperty(container, globalFieldID, currentValue);
 				}
 			}
@@ -66,7 +66,7 @@ public final class InventoryFieldCache<C extends Container> {
 				if (value != currentValue || value != cachedValue) {
 					inventory.setField(localFieldID, value);
 					entry.setField(localFieldID, value);
-					for (IContainerListener listener : listeners)
+					for (ContainerListener listener : listeners)
 						listener.sendWindowProperty(container, globalFieldID, currentValue);
 				}
 			}
@@ -74,17 +74,17 @@ public final class InventoryFieldCache<C extends Container> {
 	}
 
 	public static <C extends Container, E extends EnumValue<E> & InventoryRef<C, ?>> Builder<C, E> builder(
-		C container, List<IContainerListener> listeners, EnumValue.EnumObject<E> inventoryRefMetadata) {
+		C container, List<ContainerListener> listeners, EnumValue.EnumObject<E> inventoryRefMetadata) {
 		return new Builder<>(container, listeners, inventoryRefMetadata);
 	}
 
 	public static final class Builder<C extends Container, E extends EnumValue<E> & InventoryRef<C, ?>>
 		implements GeneralizedBuilder<Builder<C, E>, InventoryFieldCache<C>> {
 		private final C container;
-		private final List<IContainerListener> listeners;
+		private final List<ContainerListener> listeners;
 		private final EnumValue.EnumObject<E> inventoryRefMetadata;
 
-		private Builder(C container, List<IContainerListener> listeners, EnumValue.EnumObject<E> inventoryRefMetadata) {
+		private Builder(C container, List<ContainerListener> listeners, EnumValue.EnumObject<E> inventoryRefMetadata) {
 			this.container = container;
 			this.listeners = listeners;
 			this.inventoryRefMetadata = inventoryRefMetadata;

@@ -2,12 +2,12 @@ package org.lambdazation.common.biome;
 
 import org.lambdazation.Lambdazation;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.gen.GenerationStage;
+import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.MinableConfig;
 import net.minecraft.world.gen.feature.NoFeatureConfig;
@@ -32,24 +32,24 @@ public final class BiomeMusicValley extends Biome {
 
 		this.lambdazation = lambdazation;
 		this.addFeature(
-			GenerationStage.Decoration.TOP_LAYER_MODIFICATION,
-			createCompositeFeature(
+			GenerationStep.Feature.TOP_LAYER_MODIFICATION,
+			configureFeature(
 				Feature.MINABLE,
-				new MinableConfig(MinableConfig.IS_ROCK, lambdazation.lambdazationBlocks.blockLambdaBlock.getDefaultState(), 23),
+				new MinableConfig(MinableConfig.IS_STONE, lambdazation.lambdazationBlocks.blockLambdaBlock.getDefaultState(), 23),
 				COUNT_RANGE,
 				new CountRangeConfig(10, 17, 50, 70)));
 		this.addFeature(
-			GenerationStage.Decoration.TOP_LAYER_MODIFICATION,
-			createCompositeFeature(
+			GenerationStep.Feature.TOP_LAYER_MODIFICATION,
+			configureFeature(
 				Feature.FOREST_FLOWERS,
 				new NoFeatureConfig(),
 				COUNT_RANGE,
 				new CountRangeConfig(10, 64, 68, 70)));
 	}
 
-	public void playSound(EntityPlayer player) {
+	public void playSound(PlayerEntity player) {
 		if (player.world.getBiome(player.getPosition()) instanceof BiomeMusicValley)
-			player.world.playSound(player, player.getPosition(), new SoundEvent(new ResourceLocation("angel")),
+			player.world.playSound(player, player.getPosition(), new SoundEvent(new Identifier("angel")),
 				SoundCategory.MUSIC, 3, 7);
 	}
 }

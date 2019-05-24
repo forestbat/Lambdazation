@@ -4,8 +4,6 @@ import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.boss.EntityWither;
 import net.minecraft.world.World;
 import org.lambdazation.Lambdazation;
-import org.lambdazation.common.entity.EntityJava;
-import org.lambdazation.common.entity.EntityJavaObject;
 
 public class EntityAISpawnMinions extends EntityAIBase {
 	public final Lambdazation lambdazation;

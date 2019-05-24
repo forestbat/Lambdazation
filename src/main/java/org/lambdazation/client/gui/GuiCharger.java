@@ -3,26 +3,26 @@ package org.lambdazation.client.gui;
 import org.lambdazation.Lambdazation;
 import org.lambdazation.common.inventory.ContainerCharger;
 import org.lambdazation.common.inventory.ContainerCharger.InventoryRefCharger;
-import org.lambdazation.common.tileentity.TileEntityCharger;
-import org.lambdazation.common.tileentity.TileEntityCharger.InventoryFieldCharger;
+import org.lambdazation.common.blockentity.BlockEntityCharger;
+import org.lambdazation.common.blockentity.BlockEntityCharger.InventoryFieldCharger;
 
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.util.Identifier;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public final class GuiCharger extends GuiContainer {
-	public static final ResourceLocation CHARGER_RESOURCE = new ResourceLocation("lambdazation", "textures/gui/container/charger.png");
+	public static final Identifier CHARGER_RESOURCE = new Identifier("lambdazation", "textures/gui/container/charger.png");
 
 	public final Lambdazation lambdazation;
 
 	public final ContainerCharger containerCharger;
 
-	public GuiCharger(Lambdazation lambdazation, InventoryPlayer playerInventory,
-		TileEntityCharger chargerInventory) {
+	public GuiCharger(Lambdazation lambdazation, PlayerInventory playerInventory,
+		BlockEntityCharger chargerInventory) {
 		super(new ContainerCharger(lambdazation, playerInventory, chargerInventory));
 
 		this.lambdazation = lambdazation;
